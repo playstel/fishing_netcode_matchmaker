@@ -10,11 +10,12 @@ TagManager:
   - Fish_2
   - Fish_3
   - Splash_2
+  - Bounds
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Bullet
   - Water
   - UI
   - 

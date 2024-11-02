@@ -10,14 +10,14 @@ namespace GunFishing
 
         private void Start()
         {
-            SetRandomDirection();
+            //SetRandomDirection();
             
-            InvokeRepeating(nameof(SetRandomDirection), directionChangeInterval, directionChangeInterval);
+            //InvokeRepeating(nameof(SetRandomDirection), directionChangeInterval, directionChangeInterval);
         }
 
         private void Update()
         {
-            transform.Translate(_moveDirection * speed * Time.deltaTime);
+            //transform.Translate(_moveDirection * speed * Time.deltaTime);
         }
 
         private void SetRandomDirection()

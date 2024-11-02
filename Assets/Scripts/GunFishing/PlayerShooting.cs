@@ -9,8 +9,7 @@ namespace GunFishing
     {
         public GameObject bulletPrefab;
         public string bulletTag = "Bullet";
-        public float shootForce = 100f;
-        
+
         public float fireRate = 12f;         
         private float nextShotTime = 0f;     
         private bool isAutomaticMode = false; 
@@ -18,6 +17,10 @@ namespace GunFishing
         private Camera _cameraMain;
         private Transform _transform;
         private float posY;
+        
+        [SerializeField] private int shotCount = 0;       
+        [SerializeField] private int hitCount = 0;        
+        private int correctionThreshold = 12;  
 
         private void Start()
         {
@@ -26,7 +29,7 @@ namespace GunFishing
             posY = _transform.position.y;
         }
 
-        void Update()
+        private void Update()
         {
             GunShoot();
             GunMove();
@@ -67,14 +70,45 @@ namespace GunFishing
 
         private void Shoot()
         {
-            var position = _transform.position;
+            var bulletInstance = GetObjectFromPool();
 
-            var bulletInstance = ObjectPool.ObjectPool.Instance
-                .SpawnFromPool(bulletTag, position + Vector3.up, bulletPrefab.transform.rotation);
-            
-            var rb = bulletInstance.GetComponent<Rigidbody2D>();
-            
-            rb.AddForce(shootForce * Vector2.up, ForceMode2D.Impulse);
+            bulletInstance.TryGetComponent(out Bullet bullet);
+            {
+                bullet.SetHost(this);
+                SuccessRateCheck();
+            }
+        }
+
+        private GameObject GetObjectFromPool()
+        {
+            return ObjectPool.ObjectPool.Instance
+                .SpawnFromPool(bulletTag, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
+        }
+
+        private void SuccessRateCheck()
+        {
+            shotCount++;
+
+            if (shotCount >= correctionThreshold)
+            {
+                CheckSuccessRate();
+                shotCount = 0;
+                hitCount = 0;
+            }
+        }
+
+        public void RegisterHit()
+        {
+            hitCount++;
+        }
+
+        private void CheckSuccessRate()
+        {
+            if (hitCount < 3)
+            {
+                Debug.Log("Making the game easier: spawn easy fish");
+                FishSpawner.Instance.SpawnEasyFish();
+            }
         }
     }
 }

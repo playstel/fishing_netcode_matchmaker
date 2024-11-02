@@ -8,6 +8,17 @@ namespace GunFishing
     {
         public float speed = 10f;
         private Vector3? direction;
+        private Rigidbody2D rb;
+
+        private void Awake()
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        private void OnEnable()
+        {
+            rb.velocity = Vector2.up * speed;
+        }
 
         public void Initialize(Vector3 fireDirection)
         {
@@ -19,23 +30,33 @@ namespace GunFishing
             ObjectPool.ObjectPool.Instance.ReturnToPool(gameObject);
         }
 
-        // private void Update()
-        // {
-        //     if (direction == null) return;
-        //
-        //     //transform.position += (Vector3)direction * speed * Time.deltaTime;
-        //
-        //     //if (transform.position.magnitude > 50f) Destroy(gameObject);
-        // }
-
-        private void OnTriggerEnter(Collider other)
+        private PlayerShooting _playerShooting;
+        public void SetHost(PlayerShooting shooting)
         {
-            if (TryGetComponent<Fish>(out Fish fish))
+            _playerShooting = shooting;
+        }
+
+        public void RegisterHit()
+        {
+            _playerShooting.RegisterHit();
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("Bounds"))
             {
-                if (fish != null && !fish.isCaught.Value)
+                Vector2 newVelocity = rb.velocity;
+
+                if (Mathf.Abs(collision.contacts[0].normal.x) > 0.5f)
                 {
-                    fish.CatchFishServerRpc(OwnerClientId);
+                    newVelocity.x = -newVelocity.x; 
                 }
+                if (Mathf.Abs(collision.contacts[0].normal.y) > 0.5f)
+                {
+                    newVelocity.y = -newVelocity.y; 
+                }
+
+                rb.velocity = newVelocity.normalized * speed; 
             }
         }
     }

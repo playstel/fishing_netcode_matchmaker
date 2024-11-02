@@ -71,7 +71,6 @@ namespace GunFishing.ObjectPool
 
         public void ReturnToPool(GameObject obj)
         {
-            Debug.Log("ReturnToPool: " + obj.name);
             obj.SetActive(false);
             poolDictionary[obj.tag].Enqueue(obj);
         }
