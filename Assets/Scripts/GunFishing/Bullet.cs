@@ -7,12 +7,16 @@ namespace GunFishing
     public class Bullet : NetworkBehaviour
     {
         public float speed = 10f;
+        public string fxTag;
+        private float maxLifeTime = 5f;
         private Vector3? direction;
         private Rigidbody2D rb;
+        private GameObject _gameObject;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            _gameObject = gameObject;
         }
 
         private void OnEnable()
@@ -27,6 +31,12 @@ namespace GunFishing
 
         private void OnBecameInvisible()
         {
+            ReturnToPool();
+        }
+
+        private void ReturnToPool()
+        {
+            ObjectPool.ObjectPool.Instance.SpawnFromPool(fxTag, transform.position, Quaternion.identity);
             ObjectPool.ObjectPool.Instance.ReturnToPool(gameObject);
         }
 
@@ -57,6 +67,25 @@ namespace GunFishing
                 }
 
                 rb.velocity = newVelocity.normalized * speed; 
+            }
+        }
+
+        private float _lifeTime;
+        private void Update()
+        {
+            if (_gameObject.activeSelf)
+            {
+                _lifeTime += Time.deltaTime;
+
+                if (_lifeTime > maxLifeTime)
+                {
+                    _lifeTime = 0;
+                    ReturnToPool();
+                }
+            }
+            else
+            {
+                _lifeTime = 0;
             }
         }
     }

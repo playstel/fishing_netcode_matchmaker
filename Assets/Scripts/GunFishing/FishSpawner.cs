@@ -55,9 +55,9 @@ namespace GunFishing
         {
             return Random.value switch
             {
-                < 0.6f => Fish.VolatilityLevel.Low,    
-                < 0.9f => Fish.VolatilityLevel.Medium,  
-                _ => Fish.VolatilityLevel.High
+                < 0.6f => Fish.VolatilityLevel.Common,    
+                < 0.9f => Fish.VolatilityLevel.Rare,  
+                _ => Fish.VolatilityLevel.Legendary
             };
         }
     }

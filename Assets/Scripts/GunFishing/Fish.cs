@@ -7,9 +7,11 @@ namespace GunFishing
 {
     public class Fish : NetworkBehaviour
     {
-        public enum VolatilityLevel { Low, Medium, High }
-        
-        public VolatilityLevel volatility = VolatilityLevel.Low;
+        public enum VolatilityLevel { Common, Rare, Legendary }
+        public enum FishType { Rust, Purple, Gold }
+
+        public FishType fishType;
+        public VolatilityLevel volatility = VolatilityLevel.Common;
         public int points = 10;        
         public float baseSpeed = 2f;   
         private float speed;           
@@ -25,15 +27,15 @@ namespace GunFishing
             
             switch (level)
             {
-                case VolatilityLevel.Low:
+                case VolatilityLevel.Common:
                     speed = baseSpeed;
                     points = 10;
                     break;
-                case VolatilityLevel.Medium:
+                case VolatilityLevel.Rare:
                     speed = baseSpeed * 1.5f;
                     points = 20;
                     break;
-                case VolatilityLevel.High:
+                case VolatilityLevel.Legendary:
                     speed = baseSpeed * 2.5f;
                     points = 40;
                     break;
@@ -73,9 +75,9 @@ namespace GunFishing
         {
             return volatility switch
             {
-                VolatilityLevel.Low => 0.01f,   
-                VolatilityLevel.Medium => 0.05f,
-                VolatilityLevel.High => 0.1f,   
+                VolatilityLevel.Common => 0.01f,   
+                VolatilityLevel.Rare => 0.05f,
+                VolatilityLevel.Legendary => 0.1f,   
                 _ => 0.01f
             };
         }
@@ -106,7 +108,9 @@ namespace GunFishing
                 
                 ObjectPool.ObjectPool.Instance.ReturnToPool(gameObject);
                 
-                GameManager.Instance.AddScore(points);
+                //GameManager.Instance.AddScore(points);
+                
+                ScoreManager.Instance.RegisterShot(points, $"{volatility} {fishType} fish" );
             }
         }
     }

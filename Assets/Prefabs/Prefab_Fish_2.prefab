@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 270600946288200144}
   - component: {fileID: 3282070002949706901}
   - component: {fileID: 8511935038293278045}
-  - component: {fileID: 7078165888739207177}
   m_Layer: 5
   m_Name: Prefab_Fish_2
   m_TagString: Fish_2
@@ -176,26 +175,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa5e889e60934e67ac2cc1859e46ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fishType: 1
   volatility: 0
-  points: 10
-  baseSpeed: 2
+  points: 20
+  baseSpeed: 6
   isCaught:
     m_InternalValue: 0
   fxTag: Splash
---- !u!114 &7078165888739207177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8834051375303989885}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14a4507cf7574c4c8b4149bfa6d0108d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 6
-  directionChangeInterval: 2
 --- !u!1001 &4337485960744081373
 PrefabInstance:
   m_ObjectHideFlags: 0
