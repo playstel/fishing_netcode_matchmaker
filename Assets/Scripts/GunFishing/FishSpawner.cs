@@ -4,20 +4,24 @@ namespace GunFishing
 {
     public class FishSpawner : MonoBehaviour
     {
-        public GameObject fishPrefab;
+        public string[] fishTags;       
+
         public float spawnInterval = 2f;
         public float spawnRangeX = 8f;
         public float spawnRangeY = 4f;
 
         private void Start()
         {
-            InvokeRepeating("SpawnFish", spawnInterval, spawnInterval);
+            InvokeRepeating(nameof(SpawnFish), spawnInterval, spawnInterval);
         }
 
         private void SpawnFish()
         {
+            var fishName = fishTags[Random.Range(0, fishTags.Length)];
+
             Vector2 spawnPosition = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), Random.Range(-spawnRangeY, spawnRangeY));
-            Instantiate(fishPrefab, spawnPosition, fishPrefab.transform.rotation);
+
+            ObjectPool.ObjectPool.Instance.SpawnFromPool(fishName, spawnPosition, Quaternion.identity);
         }
     }
 

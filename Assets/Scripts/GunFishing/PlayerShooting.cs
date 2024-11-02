@@ -8,6 +8,7 @@ namespace GunFishing
     public class PlayerShooting : MonoBehaviour
     {
         public GameObject bulletPrefab;
+        public string bulletTag = "Bullet";
         public float shootForce = 100f;
         
         public float fireRate = 12f;         
@@ -33,26 +34,22 @@ namespace GunFishing
 
         private void GunShoot()
         {
-            // Переключение режима огня с помощью клавиши F
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 isAutomaticMode = !isAutomaticMode;
-                Debug.Log("Режим огня: " + (isAutomaticMode ? "Автоматический" : "Ручной"));
+                Debug.Log("Fire mode: " + (isAutomaticMode ? "Auto" : "Single"));
             }
 
-            // Проверка, если можно стрелять в зависимости от режима огня и скорострельности
             if (isAutomaticMode)
             {
-                // Автоматический режим: удержание левой кнопки мыши
                 if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
                 {
                     Shoot();
-                    nextShotTime = Time.time + (1f / fireRate); // Обновление времени для следующего выстрела
+                    nextShotTime = Time.time + (1f / fireRate); 
                 }
             }
             else
             {
-                // Ручной режим: одиночные выстрелы по нажатию
                 if (Input.GetMouseButtonDown(0) && Time.time >= nextShotTime)
                 {
                     Shoot();
@@ -71,8 +68,12 @@ namespace GunFishing
         private void Shoot()
         {
             var position = _transform.position;
-            var bulletInstance = Instantiate(bulletPrefab, position + Vector3.up, bulletPrefab.transform.rotation);
+
+            var bulletInstance = ObjectPool.ObjectPool.Instance
+                .SpawnFromPool(bulletTag, position + Vector3.up, bulletPrefab.transform.rotation);
+            
             var rb = bulletInstance.GetComponent<Rigidbody2D>();
+            
             rb.AddForce(shootForce * Vector2.up, ForceMode2D.Impulse);
         }
     }

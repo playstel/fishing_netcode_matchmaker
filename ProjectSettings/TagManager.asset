@@ -5,7 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Bullet
-  - Fish
+  - Splash
+  - Fish_1
+  - Fish_2
+  - Fish_3
+  - Splash_2
   layers:
   - Default
   - TransparentFX

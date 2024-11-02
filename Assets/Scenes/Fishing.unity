@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 10
+  serializedVersion: 9
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 12
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -66,6 +66,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 0
@@ -297,7 +300,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 4688157285181651564, guid: 464c2a223c9404b7a8f7afdfb3733964, type: 3}
+  bulletTag: Bullet
   shootForce: 40
+  fireRate: 12
 --- !u!1 &1820036170
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,7 +509,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9281ba2afbd4498db9fc113c36ebc03e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fishPrefab: {fileID: 8834051375303989885, guid: a769faf63076740e5a1dc6afa7078caf, type: 3}
+  fishTags:
+  - Fish_1
+  - Fish_2
+  - Fish_3
   spawnInterval: 1
   spawnRangeX: 8
   spawnRangeY: 2
@@ -517,7 +525,70 @@ Transform:
   m_GameObject: {fileID: 1979927200}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.1770629, y: 0.8381687, z: -0.10108965}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2036748391
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2036748393}
+  - component: {fileID: 2036748392}
+  m_Layer: 0
+  m_Name: ObjectPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2036748392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036748391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c5bed0f2fb24ef4978949abb731b378, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pools:
+  - tag: Bullet
+    prefab: {fileID: 4688157285181651564, guid: 464c2a223c9404b7a8f7afdfb3733964, type: 3}
+    size: 15
+  - tag: Splash
+    prefab: {fileID: 1967835574231978638, guid: 3e196c9e632c76841a71cb6e2dc6d010, type: 3}
+    size: 15
+  - tag: Splash_2
+    prefab: {fileID: 6445666186361868711, guid: 9deea548c44c9ac4e94d6932a0d85eaf, type: 3}
+    size: 15
+  - tag: Fish_1
+    prefab: {fileID: 8834051375303989885, guid: a769faf63076740e5a1dc6afa7078caf, type: 3}
+    size: 15
+  - tag: Fish_2
+    prefab: {fileID: 8834051375303989885, guid: d9c1c949dc9b248109ad2029e425f277, type: 3}
+    size: 15
+  - tag: Fish_3
+    prefab: {fileID: 8834051375303989885, guid: b2b2063c6b54a4c48b10d84a48086a60, type: 3}
+    size: 15
+--- !u!4 &2036748393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036748391}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 12.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -592,3 +663,4 @@ SceneRoots:
   - {fileID: 708181440}
   - {fileID: 4571399760448057322}
   - {fileID: 1979927202}
+  - {fileID: 2036748393}
