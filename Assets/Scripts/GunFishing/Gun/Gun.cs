@@ -1,11 +1,10 @@
-using System;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
-namespace GunFishing
+using GunFishing.Fish;
+using UnityEngine;
+
+namespace GunFishing.Gun
 {
-    public class PlayerShooting : MonoBehaviour
+    public class Gun : MonoBehaviour
     {
         public GameObject bulletPrefab;
         public string bulletTag = "Bullet";

@@ -1,4 +1,4 @@
-namespace GunFishing
+namespace GunFishing.Score
 {
     public class ShotResult
     {

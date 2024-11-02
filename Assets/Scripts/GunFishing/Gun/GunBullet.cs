@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace GunFishing
+namespace GunFishing.Gun
 {
     public class Bullet : NetworkBehaviour
     {
@@ -40,15 +40,15 @@ namespace GunFishing
             ObjectPool.ObjectPool.Instance.ReturnToPool(gameObject);
         }
 
-        private PlayerShooting _playerShooting;
-        public void SetHost(PlayerShooting shooting)
+        private Gun _gun;
+        public void SetHost(Gun shooting)
         {
-            _playerShooting = shooting;
+            _gun = shooting;
         }
 
         public void RegisterHit()
         {
-            _playerShooting.RegisterHit();
+            _gun.RegisterHit();
         }
 
         private void OnCollisionEnter2D(Collision2D collision)

@@ -1,8 +1,7 @@
-using System;
-using UnityEngine;
-
-namespace GunFishing.Effects
+namespace GunFishing.ObjectPool
 {
+    using UnityEngine;
+    
     public class ObjectLifetime : MonoBehaviour
     {
         public float _lifeTime = 0.5f;
@@ -14,7 +13,7 @@ namespace GunFishing.Effects
 
         private void ReturnToPool()
         {
-            ObjectPool.ObjectPool.Instance.ReturnToPool(gameObject);
+            ObjectPool.Instance.ReturnToPool(gameObject);
         }
     }
 }

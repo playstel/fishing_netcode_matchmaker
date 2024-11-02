@@ -1,9 +1,11 @@
 using System;
+using GunFishing.Gun;
+using GunFishing.Score;
 using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace GunFishing
+namespace GunFishing.Fish
 {
     public class Fish : NetworkBehaviour
     {

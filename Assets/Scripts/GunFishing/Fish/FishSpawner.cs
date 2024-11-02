@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GunFishing
+namespace GunFishing.Fish
 {
     public class FishSpawner : MonoBehaviour
     {

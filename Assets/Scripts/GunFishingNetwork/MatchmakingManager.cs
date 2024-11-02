@@ -25,8 +25,6 @@ public class MatchmakingManager : MonoBehaviour
 
     private async void StartMatchmaking()
     {
-        // Пользовательские данные игрока, которые будут учитываться при подборе
-
         var data = new Dictionary<string, PlayerDataObject>
         {
             {"SkillLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, "5")},

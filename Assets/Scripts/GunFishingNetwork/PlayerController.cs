@@ -1,4 +1,5 @@
 using GunFishing;
+using GunFishing.Gun;
 using Unity.Netcode;
 using UnityEngine;
 
