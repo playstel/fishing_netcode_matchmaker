@@ -10,23 +10,25 @@ namespace GunFishing.Gun
         public GameObject bulletPrefab;
         public string bulletTag = "Bullet";
 
-        public float fireRate = 12f;         
-        private float nextShotTime = 0f;     
-        private bool isAutomaticMode = false; 
+        public float fireRate = 12f;
+        [SerializeField] private int shotCount = 0;       
+        [SerializeField] private int hitCount = 0;
         
         private Camera _cameraMain;
         private Transform _transform;
-        private float posY;
         
-        [SerializeField] private int shotCount = 0;       
-        [SerializeField] private int hitCount = 0;        
-        private int correctionThreshold = 12;  
+        private float _posY;
+        private float _nextShotTime = 0f;     
+        private bool _isAutomaticMode = false;
+
+        private const int CorrectionThreshold = 12;
+        private const int MouseBounds = 7;
 
         private void Start()
         {
             _cameraMain = Camera.main;
             _transform = transform;
-            posY = _transform.position.y;
+            _posY = _transform.position.y;
         }
 
         private void Update()
@@ -39,24 +41,24 @@ namespace GunFishing.Gun
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                isAutomaticMode = !isAutomaticMode;
-                Debug.Log("Fire mode: " + (isAutomaticMode ? "Auto" : "Single"));
+                _isAutomaticMode = !_isAutomaticMode;
+                Debug.Log("Fire mode: " + (_isAutomaticMode ? "Auto" : "Single"));
             }
 
-            if (isAutomaticMode)
+            if (_isAutomaticMode)
             {
-                if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
+                if (Input.GetMouseButton(0) && Time.time >= _nextShotTime)
                 {
                     Shoot();
-                    nextShotTime = Time.time + (1f / fireRate); 
+                    _nextShotTime = Time.time + (1f / fireRate); 
                 }
             }
             else
             {
-                if (Input.GetMouseButtonDown(0) && Time.time >= nextShotTime)
+                if (Input.GetMouseButtonDown(0) && Time.time >= _nextShotTime)
                 {
                     Shoot();
-                    nextShotTime = Time.time + (1f / fireRate);
+                    _nextShotTime = Time.time + (1f / fireRate);
                 }
             }
         }
@@ -65,7 +67,11 @@ namespace GunFishing.Gun
         {
             Vector2 mousePosition = Input.mousePosition;
             Vector2 worldPosition = _cameraMain.ScreenToWorldPoint(mousePosition);
-            _transform.position = new Vector2(worldPosition.x, posY);
+            
+            if (worldPosition.x is < MouseBounds and > -MouseBounds)
+            {
+                _transform.position = new Vector2(worldPosition.x, _posY);
+            }
         }
 
         private void Shoot()
@@ -89,7 +95,7 @@ namespace GunFishing.Gun
         {
             shotCount++;
 
-            if (shotCount >= correctionThreshold)
+            if (shotCount >= CorrectionThreshold)
             {
                 CheckSuccessRate();
                 shotCount = 0;

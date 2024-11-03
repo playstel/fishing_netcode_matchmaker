@@ -60,14 +60,14 @@ namespace Server
 
         private void OnEnable()
         {
-            NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
+            //NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
+            //NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
         }
 
         private void OnDisable()
         {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
+            //NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
+            //NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
         }
 
         private void OnConnected(ulong clientId)

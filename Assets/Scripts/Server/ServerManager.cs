@@ -20,7 +20,8 @@ namespace Server
             // Загружает игровую сцену на сервере и синхронизирует ее с клиентами
             if (NetworkManager.Singleton.IsServer)
             {
-                NetworkManager.Singleton.SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+                Debug.Log("LoadGameScene");
+                //NetworkManager.Singleton.SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
             }
         }
 
