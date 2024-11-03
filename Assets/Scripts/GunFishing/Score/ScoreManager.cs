@@ -26,8 +26,6 @@ namespace GunFishing.Score
 
         public void RegisterShot(int score, string fishType)
         {
-            Debug.Log("RegisterShot: " + score + " | fishType: " + fishType);
-            
             recentShots.Add(new ShotResult(score, fishType));
             
             if (recentShots.Count > 12)

@@ -1,10 +1,11 @@
 
 using GunFishing.Fish;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace GunFishing.Gun
 {
-    public class Gun : MonoBehaviour
+    public class Gun : NetworkBehaviour
     {
         public GameObject bulletPrefab;
         public string bulletTag = "Bullet";

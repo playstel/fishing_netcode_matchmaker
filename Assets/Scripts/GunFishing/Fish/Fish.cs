@@ -60,7 +60,6 @@ namespace GunFishing.Fish
                 if (Random.value < GetVolatilityChangeRate())
                 {
                     movementDirection = GetRandomDirection();
-                    Debug.Log("movementDirection");
                 }
             }
             

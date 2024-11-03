@@ -1,8 +1,9 @@
+using Unity.Netcode;
 using UnityEngine;
 
 namespace GunFishing.Fish
 {
-    public class FishSpawner : MonoBehaviour
+    public class FishSpawner : NetworkBehaviour
     {
         [Header("Fish setup")]
         public string[] fishTags;   
