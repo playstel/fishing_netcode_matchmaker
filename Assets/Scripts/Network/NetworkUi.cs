@@ -14,8 +14,6 @@ namespace Network
         {
             buttonHost.onClick.AddListener(CreateRelay);
             buttonJoin.onClick.AddListener(() => JoinRelay(inputJoin.text));
-            
-            DontDestroyOnLoad(gameObject);
         }
 
         private async void JoinRelay(string inputJoinText)

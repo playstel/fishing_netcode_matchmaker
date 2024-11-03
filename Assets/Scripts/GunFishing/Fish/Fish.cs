@@ -111,7 +111,7 @@ namespace GunFishing.Fish
                 
                 //GameManager.Instance.AddScore(points);
                 
-                ScoreManager.Instance.RegisterShot(points, $"{volatility} {fishType} fish" );
+                RoomInfoUi.Instance.RegisterShot(points, $"{volatility} {fishType} fish" );
             }
         }
     }

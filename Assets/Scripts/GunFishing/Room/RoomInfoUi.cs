@@ -6,15 +6,16 @@ namespace GunFishing.Score
     using UnityEngine;
     using UnityEngine.UI;
 
-    public class ScoreManager : MonoBehaviour
+    public class RoomInfoUi : MonoBehaviour
     {
-        public static ScoreManager Instance;
+        public static RoomInfoUi Instance;
 
         private int totalScore = 0;
-        private List<ShotResult> recentShots = new List<ShotResult>();  
+        private List<RoomShotResult> recentShots = new List<RoomShotResult>();  
 
         public TMP_Text recentShotsText;   
         public TMP_Text totalScoreText;    
+        public TMP_Text shootingModeText;    
 
         void Awake()
         {
@@ -26,7 +27,7 @@ namespace GunFishing.Score
 
         public void RegisterShot(int score, string fishType)
         {
-            recentShots.Add(new ShotResult(score, fishType));
+            recentShots.Add(new RoomShotResult(score, fishType));
             
             if (recentShots.Count > 12)
             {
@@ -38,11 +39,16 @@ namespace GunFishing.Score
             UpdateUI();
         }
 
+        public void ChangeShootingMode(string mode)
+        {
+            shootingModeText.text = mode;
+        }
+
         private void UpdateUI()
         {
             recentShotsText.text = null;
             
-            foreach (ShotResult shot in recentShots)
+            foreach (RoomShotResult shot in recentShots)
             {
                 recentShotsText.text += $"+{shot.score} for {shot.fishName}\n";
             }
