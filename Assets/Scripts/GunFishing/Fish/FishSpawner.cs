@@ -1,3 +1,4 @@
+using Network;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -5,9 +6,13 @@ namespace GunFishing.Fish
 {
     public class FishSpawner : NetworkBehaviour
     {
-        [Header("Fish setup")]
+        [Header("Fish tags")]
         public string[] fishTags;   
         public string easyFishTag;        
+        
+        [Header("Fish prefabs")]
+        public NetworkObject[] fishPrefabs;   
+        public NetworkObject easyFishPrefab; 
         
         [Header("Spawn setup")]
         public float spawnInterval = 2f;
@@ -23,28 +28,43 @@ namespace GunFishing.Fish
         
         private void Start()
         {
-            InvokeRepeating(nameof(SpawnFish), spawnInterval, spawnInterval);
+            if (IsServer)
+            {
+                InvokeRepeating(nameof(SpawnFishServerRpc), spawnInterval, spawnInterval);
+            }
         }
 
-        private void SpawnFish()
+        [ServerRpc]
+        private void SpawnFishServerRpc()
         {
-            SpawnFish(GetRandomFishTag(), SpawnPosition());
+            SpawnFish(GetRandomFishPrefab(), SpawnPosition());
         }
 
         public void SpawnEasyFish()
         {
-            SpawnFish(easyFishTag, SpawnPosition());
+            SpawnEasyFishServerRpc();
         }
         
-        private string GetRandomFishTag()
+        [ServerRpc]
+        private void SpawnEasyFishServerRpc()
         {
-            return fishTags[Random.Range(0, fishTags.Length)];
+            SpawnFish(easyFishPrefab, SpawnPosition());
         }
         
-        private void SpawnFish(string fishTag, Vector2 spawnPosition)
+        private NetworkObject GetRandomFishPrefab()
         {
-            var fish = ObjectPool.ObjectPool.Instance.SpawnFromPool(fishTag, spawnPosition, Quaternion.identity);
-            fish.GetComponent<Fish>().SetVolatilityLevel(GetRandomVolatilityLevel());
+            return fishPrefabs[Random.Range(0, fishPrefabs.Length)];
+        }
+        
+        private void SpawnFish(NetworkObject fishPrefab, Vector2 spawnPosition)
+        {
+            //var fish = ObjectPool.ObjectPool.Instance.SpawnFromPool(fishTag, spawnPosition, Quaternion.identity);
+            //var fish = Instantiate(fishPrefab, spawnPosition, Quaternion.identity);
+            
+            var fishInstance = NetworkRelay.Instance.NetworkManager.SpawnManager
+                .InstantiateAndSpawn(fishPrefab, position:spawnPosition, rotation: Quaternion.identity);
+            
+            fishInstance.GetComponent<Fish>().SetVolatilityLevel(GetRandomVolatilityLevel());
         }
         
         private Vector2 SpawnPosition()

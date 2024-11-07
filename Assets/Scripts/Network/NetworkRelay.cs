@@ -11,13 +11,18 @@ using UnityEngine.SceneManagement;
 
 namespace Network
 {
+    [RequireComponent(typeof(NetworkManager))]
     public class NetworkRelay : MonoBehaviour
     {
         public static NetworkRelay Instance;
+        public NetworkManager NetworkManager;
+        private string _gameSceneName = "2_Fishing";
+        private string _transportProtocol = "dtls";
 
         private void Awake()
         {
             Instance = this;
+            NetworkManager = GetComponent<NetworkManager>();
             DontDestroyOnLoad(gameObject);
         }
         
@@ -53,7 +58,7 @@ namespace Network
             
                 var joinCode = await Unity.Services.Relay.Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-                var relayServerData = new RelayServerData(allocation, "dtls");
+                var relayServerData = new RelayServerData(allocation, _transportProtocol);
 
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
             
@@ -75,7 +80,7 @@ namespace Network
         {
             if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost)
             {
-                NetworkManager.Singleton.SceneManager.LoadScene("Fishing", LoadSceneMode.Single);
+                NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
             }
             else
             {
@@ -98,7 +103,7 @@ namespace Network
                 
                 var joinAllocation = await Unity.Services.Relay.Relay.Instance.JoinAllocationAsync(code);
 
-                var relayServerData = new RelayServerData(joinAllocation, "dtls");
+                var relayServerData = new RelayServerData(joinAllocation, _transportProtocol);
 
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 

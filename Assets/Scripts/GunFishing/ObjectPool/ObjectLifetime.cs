@@ -13,7 +13,7 @@ namespace GunFishing.ObjectPool
 
         private void ReturnToPool()
         {
-            ObjectPool.Instance.ReturnToPool(gameObject);
+            Destroy(gameObject);
         }
     }
 }

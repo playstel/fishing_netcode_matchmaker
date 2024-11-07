@@ -7,16 +7,15 @@ namespace GunFishing.Gun
     public class Bullet : NetworkBehaviour
     {
         public float speed = 10f;
-        public string fxTag;
+        //public string fxTag;
+        public GameObject fxPrefab;
         private float maxLifeTime = 5f;
-        private Vector3? direction;
         private Rigidbody2D rb;
-        private GameObject _gameObject;
+        private Gun _gun;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
-            _gameObject = gameObject;
         }
 
         private void OnEnable()
@@ -24,23 +23,11 @@ namespace GunFishing.Gun
             rb.velocity = Vector2.up * speed;
         }
 
-        public void Initialize(Vector3 fireDirection)
-        {
-            direction = fireDirection;
-        }
-
         private void OnBecameInvisible()
         {
-            ReturnToPool();
+            Instantiate(fxPrefab, transform.position, Quaternion.identity, parent: null);
         }
-
-        private void ReturnToPool()
-        {
-            ObjectPool.ObjectPool.Instance.SpawnFromPool(fxTag, transform.position, Quaternion.identity);
-            ObjectPool.ObjectPool.Instance.ReturnToPool(gameObject);
-        }
-
-        private Gun _gun;
+        
         public void SetHost(Gun shooting)
         {
             _gun = shooting;
@@ -67,25 +54,6 @@ namespace GunFishing.Gun
                 }
 
                 rb.velocity = newVelocity.normalized * speed; 
-            }
-        }
-
-        private float _lifeTime;
-        private void Update()
-        {
-            if (_gameObject.activeSelf)
-            {
-                _lifeTime += Time.deltaTime;
-
-                if (_lifeTime > maxLifeTime)
-                {
-                    _lifeTime = 0;
-                    ReturnToPool();
-                }
-            }
-            else
-            {
-                _lifeTime = 0;
             }
         }
     }

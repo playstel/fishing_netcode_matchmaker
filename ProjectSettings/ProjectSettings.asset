@@ -897,10 +897,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 2f6076cd-9457-45f3-87a6-194445b032e6
+  cloudProjectId: 46f71b4a-0043-4a7f-9559-d32d0f70dfa4
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Fish Game
+  projectName: _gunFishing
   organizationId: pr9nik
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

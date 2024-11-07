@@ -8,7 +8,7 @@ namespace GunFishing.Gun
     public class Gun : NetworkBehaviour
     {
         public GameObject bulletPrefab;
-        public string bulletTag = "Bullet";
+        //public string bulletTag = "Bullet";
 
         public float fireRate = 12f;
         
@@ -25,7 +25,6 @@ namespace GunFishing.Gun
         private const int CorrectionThreshold = 12;
         private const int MouseBounds = 7;
         
-        // Сетевые переменные для синхронизации
         private NetworkVariable<Vector2> networkPosition = new NetworkVariable<Vector2>();
         private NetworkVariable<bool> isShooting = new NetworkVariable<bool>();
 
@@ -41,14 +40,12 @@ namespace GunFishing.Gun
             }
             else
             {
-                // Если это не владелец, подписываемся на обновления сетевой позиции
                 networkPosition.OnValueChanged += OnNetworkPositionChanged;
             }
         }
         
         private void OnNetworkPositionChanged(Vector2 oldPosition, Vector2 newPosition)
         {
-            // Обновляем локальную позицию, если это не владелец
             if (!IsOwner)
             {
                 _transform.position = newPosition;
@@ -64,7 +61,6 @@ namespace GunFishing.Gun
             }
             else
             {
-                // Обновляем позицию для других клиентов
                 _transform.position = networkPosition.Value;
             }
         }
@@ -123,21 +119,20 @@ namespace GunFishing.Gun
         [ServerRpc]
         private void ShootServerRpc()
         {
-            // Сообщаем всем клиентам, что был произведен выстрел
             ShootClientRpc();
         }
         
         [ClientRpc]
         private void ShootClientRpc()
         {
-            // Выполняем локальную логику для всех клиентов
             Shoot();
         }
         
 
         private void Shoot()
         {
-            var bulletInstance = GetObjectFromPool();
+            //var bulletInstance = GetObjectFromPool();
+            var bulletInstance = Instantiate(bulletPrefab, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
 
             bulletInstance.TryGetComponent(out Bullet bullet);
             {
@@ -158,11 +153,10 @@ namespace GunFishing.Gun
             }
         }
         
-        private GameObject GetObjectFromPool()
-        {
-            return ObjectPool.ObjectPool.Instance
-                .SpawnFromPool(bulletTag, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
-        }
+        // private GameObject GetObjectFromPool()
+        // {
+        //     //return ObjectPool.ObjectPool.Instance.SpawnFromPool(bulletTag, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
+        // }
 
         public void RegisterHit()
         {
@@ -196,7 +190,6 @@ namespace GunFishing.Gun
                     var newPosition = new Vector2(worldPosition.x, PosY);
                     _transform.position = newPosition;
                     
-                    // Обновляем сетевую позицию на сервере
                     UpdatePositionServerRpc(newPosition);
                 }
             }
@@ -205,7 +198,6 @@ namespace GunFishing.Gun
         [ServerRpc]
         private void UpdatePositionServerRpc(Vector2 newPosition)
         {
-            // Обновляем сетевую позицию, которая синхронизируется с клиентами
             networkPosition.Value = newPosition;
         }
     }

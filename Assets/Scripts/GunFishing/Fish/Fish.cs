@@ -1,4 +1,3 @@
-using System;
 using GunFishing.Gun;
 using GunFishing.Score;
 using Unity.Netcode;
@@ -16,12 +15,13 @@ namespace GunFishing.Fish
         public VolatilityLevel volatility = VolatilityLevel.Common;
         public int points = 10;        
         public float baseSpeed = 2f;   
+        public GameObject fxPrefab;
         private float speed;           
         
         private Vector2 movementDirection;
         
+        public NetworkVariable<Vector2> networkPosition = new NetworkVariable<Vector2>();
         public NetworkVariable<bool> isCaught = new NetworkVariable<bool>(false);
-        public string fxTag;
 
         public void SetVolatilityLevel(VolatilityLevel level)
         {
@@ -51,19 +51,30 @@ namespace GunFishing.Fish
         
         private void Update()
         {
-            _timer += Time.deltaTime;
-            
-            if (_timer >= stepTime)
+            if (IsServer && !isCaught.Value)
             {
-                _timer = 0;
-                
-                if (Random.value < GetVolatilityChangeRate())
-                {
-                    movementDirection = GetRandomDirection();
-                }
-            }
+                _timer += Time.deltaTime;
             
-            transform.Translate(movementDirection * speed * Time.deltaTime);
+                if (_timer >= stepTime)
+                {
+                    _timer = 0;
+                
+                    if (Random.value < GetVolatilityChangeRate())
+                    {
+                        movementDirection = GetRandomDirection();
+                    }
+                }
+            
+                //transform.Translate(movementDirection * speed * Time.deltaTime);
+                
+                Vector2 newPosition = (Vector2)transform.position + movementDirection * speed * Time.deltaTime;
+                networkPosition.Value = newPosition;
+                transform.position = newPosition;
+            }
+            else
+            {
+                transform.position = networkPosition.Value;
+            }
         }
         
         private Vector2 GetRandomDirection()
@@ -83,36 +94,29 @@ namespace GunFishing.Fish
             };
         }
 
-        public void OnDisable()
+        [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void CatchFishServerRpc(ulong playerId)
         {
-            ObjectPool.ObjectPool.Instance.SpawnFromPool(fxTag, transform.position, Quaternion.identity);
-        }
-
-        [ServerRpc]
-        public void CatchFishServerRpc(ulong playerId)
-        {
-            if (!isCaught.Value)
-            {
-                isCaught.Value = true;
-                Debug.Log($"Fish caught by player {playerId}");
+            if (isCaught.Value) return;
+            
+            isCaught.Value = true;
                 
-            }
+            Debug.Log($"Fish caught by player {playerId}");
+                
+            Instantiate(fxPrefab, transform.position, Quaternion.identity, parent: null);
+                
+            RoomInfoUi.Instance.RegisterShot(points, $"{volatility} {fishType} fish");
+                
+            Destroy(gameObject);
         }
         
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.CompareTag("Bullet"))
-            {
-                other.GetComponent<Bullet>().RegisterHit();
+            if (!other.CompareTag("Bullet")) return;
+            
+            other.GetComponent<Bullet>().RegisterHit();
                 
-                ObjectPool.ObjectPool.Instance.ReturnToPool(other.gameObject);
-                
-                ObjectPool.ObjectPool.Instance.ReturnToPool(gameObject);
-                
-                //GameManager.Instance.AddScore(points);
-                
-                RoomInfoUi.Instance.RegisterShot(points, $"{volatility} {fishType} fish" );
-            }
+            CatchFishServerRpc(NetworkManager.Singleton.LocalClientId);
         }
     }
 }
