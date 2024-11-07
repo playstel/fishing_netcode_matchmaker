@@ -282,12 +282,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa5e889e60934e67ac2cc1859e46ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fishType: 2
-  volatility: 0
-  points: 10
   baseSpeed: 2
+  speed:
+    m_InternalValue: 0
+  fishType: 2
+  volatility:
+    m_InternalValue: 0
+  points:
+    m_InternalValue: 0
   fxPrefab: {fileID: 1967835574231978638, guid: 3e196c9e632c76841a71cb6e2dc6d010, type: 3}
   isCaught:
+    m_InternalValue: 0
+  isReady:
     m_InternalValue: 0
 --- !u!114 &7198544912040816021
 MonoBehaviour:

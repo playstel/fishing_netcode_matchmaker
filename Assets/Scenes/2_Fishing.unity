@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 211989032}
   - component: {fileID: 211989033}
   - component: {fileID: 211989034}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bounds
   m_TagString: Bounds
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.045140743, y: 0}
+  m_Offset: {x: 0.2870221, y: 0.042403698}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -198,7 +198,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 16.527798, y: 2.71}
+  m_Size: {x: 18.916542, y: 2.7948074}
   m_EdgeRadius: 0
 --- !u!50 &211989034
 Rigidbody2D:
@@ -258,53 +258,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &438347329
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 438347331}
-  - component: {fileID: 438347332}
-  m_Layer: 0
-  m_Name: ScoreManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &438347331
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 438347329}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &438347332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 438347329}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae3b72c8ae024cfe88f2934f54020879, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  recentShotsText: {fileID: 659408892}
-  totalScoreText: {fileID: 1979718269}
-  shootingModeText: {fileID: 2028960425}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,7 +495,7 @@ GameObject:
   - component: {fileID: 692920037}
   - component: {fileID: 692920038}
   - component: {fileID: 692920039}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bounds
   m_TagString: Bounds
   m_Icon: {fileID: 0}
@@ -596,7 +549,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.36113048, y: 0}
+  m_Offset: {x: -0.17031288, y: -0.021202087}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -607,7 +560,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 16.497704, y: 2.71}
+  m_Size: {x: 19.621449, y: 2.7524042}
   m_EdgeRadius: 0
 --- !u!50 &692920039
 Rigidbody2D:
@@ -715,7 +668,7 @@ GameObject:
   - component: {fileID: 1036946830}
   - component: {fileID: 1036946832}
   - component: {fileID: 1036946831}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bounds
   m_TagString: Bounds
   m_Icon: {fileID: 0}
@@ -796,7 +749,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -2.0915456, y: -0.10532951}
+  m_Offset: {x: -2.141017, y: -0.44456005}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -807,8 +760,97 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.8418417, y: 10.143261}
+  m_Size: {x: 1.9407845, y: 14.157484}
   m_EdgeRadius: 0
+--- !u!1 &1366861238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1366861243}
+  - component: {fileID: 1366861242}
+  - component: {fileID: 1366861241}
+  - component: {fileID: 1366861244}
+  m_Layer: 0
+  m_Name: RoomNetworking
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1366861241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366861238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9281ba2afbd4498db9fc113c36ebc03e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fishPrefabs:
+  - {fileID: 3282070002949706901, guid: d9c1c949dc9b248109ad2029e425f277, type: 3}
+  - {fileID: 3282070002949706901, guid: b2b2063c6b54a4c48b10d84a48086a60, type: 3}
+  easyFishPrefab: {fileID: 3282070002949706901, guid: a769faf63076740e5a1dc6afa7078caf, type: 3}
+  spawnInterval: 1
+  spawnRangeX: 8
+  spawnRangeY: 2
+--- !u!114 &1366861242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366861238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1179424845
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!4 &1366861243
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366861238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1366861244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366861238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae3b72c8ae024cfe88f2934f54020879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recentShotsText: {fileID: 659408892}
+  totalScoreText: {fileID: 1979718269}
+  shootingModeText: {fileID: 2028960425}
 --- !u!1 &1820036170
 GameObject:
   m_ObjectHideFlags: 0
@@ -925,7 +967,7 @@ GameObject:
   - component: {fileID: 1844753916}
   - component: {fileID: 1844753918}
   - component: {fileID: 1844753917}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bounds
   m_TagString: Bounds
   m_Icon: {fileID: 0}
@@ -1006,7 +1048,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -2.0915456, y: -0.10532951}
+  m_Offset: {x: -2.0562088, y: -0.10532951}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1017,7 +1059,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.8418417, y: 10.143261}
+  m_Size: {x: 1.9125152, y: 12.348257}
   m_EdgeRadius: 0
 --- !u!1 &1848616567
 GameObject:
@@ -1259,83 +1301,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1979718267}
   m_CullTransparentMesh: 1
---- !u!1 &1979927200
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1979927202}
-  - component: {fileID: 1979927203}
-  - component: {fileID: 1979927201}
-  m_Layer: 0
-  m_Name: FishSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1979927201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979927200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9281ba2afbd4498db9fc113c36ebc03e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fishTags:
-  - Fish_2
-  - Fish_3
-  easyFishTag: Fish_1
-  fishPrefabs:
-  - {fileID: 3282070002949706901, guid: d9c1c949dc9b248109ad2029e425f277, type: 3}
-  - {fileID: 3282070002949706901, guid: b2b2063c6b54a4c48b10d84a48086a60, type: 3}
-  easyFishPrefab: {fileID: 3282070002949706901, guid: a769faf63076740e5a1dc6afa7078caf, type: 3}
-  spawnInterval: 1
-  spawnRangeX: 8
-  spawnRangeY: 2
---- !u!4 &1979927202
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979927200}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1979927203
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979927200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 367877173
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!1 &2028960423
 GameObject:
   m_ObjectHideFlags: 0
@@ -1513,7 +1478,6 @@ SceneRoots:
   - {fileID: 1820036174}
   - {fileID: 708181440}
   - {fileID: 343106421}
-  - {fileID: 438347331}
-  - {fileID: 1979927202}
+  - {fileID: 1366861243}
   - {fileID: 1848616568}
   - {fileID: 2055302972}

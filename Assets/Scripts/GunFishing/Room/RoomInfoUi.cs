@@ -1,4 +1,6 @@
+using System;
 using TMPro;
+using Unity.Netcode;
 
 namespace GunFishing.Score
 {
@@ -6,12 +8,13 @@ namespace GunFishing.Score
     using UnityEngine;
     using UnityEngine.UI;
 
-    public class RoomInfoUi : MonoBehaviour
+    public class RoomInfoUi : NetworkBehaviour
     {
         public static RoomInfoUi Instance;
 
-        private int totalScore = 0;
-        private List<RoomShotResult> recentShots = new List<RoomShotResult>();  
+        private NetworkVariable<int> _totalScore = new();
+        private int TotalScore;
+        private List<RoomShotResult> _recentShots = new List<RoomShotResult>();  
 
         public TMP_Text recentShotsText;   
         public TMP_Text totalScoreText;    
@@ -25,41 +28,71 @@ namespace GunFishing.Score
                 Destroy(gameObject);
         }
 
-        public void RegisterShot(int score, string fishType)
+        private void Start()
         {
-            recentShots.Add(new RoomShotResult(score, fishType));
-            
-            if (recentShots.Count > 12)
-            {
-                recentShots.RemoveAt(0); 
-            }
-
-            totalScore += score;
-            
-            UpdateUI();
+            UpdateTotalScoreUi();
         }
 
+        public void AddTotalScore(int score)
+        {
+            TotalScore += score;
+        }
+        
+        public void RegisterShot(int score, string fishType, ulong playerId)
+        {
+            if (playerId == NetworkManager.Singleton.LocalClientId)
+            {
+                _recentShots.Add(new RoomShotResult(score, fishType));
+            
+                if (_recentShots.Count > 12)
+                {
+                    _recentShots.RemoveAt(0); 
+                }
+            }
+            
+            UpdateShotLogUi();
+            UpdateTotalScoreUi();
+        }
+
+        private float timer;
+        private float updateTime = 0.2f;
+        private void Update()
+        {
+            timer += Time.deltaTime;
+            
+            if (timer > updateTime)
+            {
+                updateTime = 0;
+                UpdateTotalScoreServerRpc();
+                UpdateTotalScoreUi();
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void UpdateTotalScoreServerRpc()
+        {
+            _totalScore.Value = TotalScore;
+        }
         public void ChangeShootingMode(string mode)
         {
             shootingModeText.text = mode;
         }
 
-        private void UpdateUI()
+        private void UpdateShotLogUi()
         {
+            Debug.Log("UpdateShotLog");
+            
             recentShotsText.text = null;
             
-            foreach (RoomShotResult shot in recentShots)
+            foreach (RoomShotResult shot in _recentShots)
             {
                 recentShotsText.text += $"+{shot.score} for {shot.fishName}\n";
             }
-
-            totalScoreText.text = "Total score: " + totalScore;
         }
 
-        public int GetTotalScore()
+        private void UpdateTotalScoreUi()
         {
-            return totalScore;
+            totalScoreText.text = "Total score: " + _totalScore.Value;
         }
     }
-
 }

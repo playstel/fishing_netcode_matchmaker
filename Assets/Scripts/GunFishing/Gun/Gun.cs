@@ -1,6 +1,8 @@
+using System;
 using GunFishing.Fish;
 using GunFishing.Score;
 using Network;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,14 +15,10 @@ namespace GunFishing.Gun
 
         public float fireRate = 12f;
         
-        private int shotCount = 0;       
-        private int hitCount = 0;
+        [SerializeField] private int shotCount = 0;       
+        [SerializeField] private int hitCount = 0;
+        
         private Camera cameraMain;
-        
-        // private float _lastPositionUpdateTime = 0f;
-        // private const float PositionUpdateInterval = 0.005f;
-
-        
         private Transform _transform;
         
         private float _nextShotTime = 0f;     
@@ -30,24 +28,31 @@ namespace GunFishing.Gun
         private const int CorrectionThreshold = 12;
         private const int MouseBounds = 7;
         
-        private NetworkVariable<Vector2> networkPosition = new NetworkVariable<Vector2>();
-
+        private NetworkVariable<Vector2> _networkPosition = new NetworkVariable<Vector2>();
         
         public override void OnNetworkSpawn()
         {
             _transform = transform;
-            
+
             if (IsOwner)
             {
-                Debug.Log("OnNetworkSpawn as owner");
                 cameraMain = Camera.main;
+                UpdatePosition(Vector2.zero);
             }
             else
             {
-                networkPosition.OnValueChanged += OnNetworkPositionChanged;
+                _networkPosition.OnValueChanged += OnNetworkPositionChanged;
             }
         }
-        
+
+        private void Start()
+        {
+            if (IsOwner)
+            {
+                SetPlayerInfoServerRpc(NetworkManager.Singleton.LocalClientId);
+            }
+        }
+
         private void OnNetworkPositionChanged(Vector2 oldPosition, Vector2 newPosition)
         {
             if (!IsOwner)
@@ -65,7 +70,7 @@ namespace GunFishing.Gun
             }
             else
             {
-                _transform.position = Vector2.Lerp(_transform.position, networkPosition.Value, Time.deltaTime * 10f);
+                _transform.position = Vector2.Lerp(_transform.position, _networkPosition.Value, Time.deltaTime * 10f);
             }
         }
 
@@ -77,15 +82,13 @@ namespace GunFishing.Gun
                 UpdateFireModeUi();
             }
 
-            bool canShoot = _isAutomaticMode ? Input.GetMouseButton(0) : Input.GetMouseButtonDown(0);
-            
-            if (canShoot && Time.time >= _nextShotTime)
-            {
-                _nextShotTime = Time.time + (1f / fireRate);
+            var canShoot = _isAutomaticMode ? Input.GetMouseButton(0) : Input.GetMouseButtonDown(0);
 
-                // Вызываем стрельбу на сервере, чтобы все клиенты увидели её
-                ShootServerRpc();
-            }
+            if (!canShoot || !(Time.time >= _nextShotTime)) return;
+            
+            _nextShotTime = Time.time + (1f / fireRate);
+
+            ShootServerRpc(NetworkManager.Singleton.LocalClientId);
         }
         
         private void UpdateFireModeUi()
@@ -97,33 +100,18 @@ namespace GunFishing.Gun
         }
         
         [ServerRpc]
-        private void ShootServerRpc()
+        private void ShootServerRpc(ulong owner)
         {
-            //ShootClientRpc();
-            Shoot();
-        }
-        
-        // [ClientRpc]
-        // private void ShootClientRpc()
-        // {
-        //     Shoot();
-        // }
-        
-        private void Shoot()
-        {
-            //var bulletInstance = GetObjectFromPool();
-            //var bulletInstance = Instantiate(bulletPrefab, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
-
             var bulletInstance = NetworkRelay.Instance.NetworkManager.SpawnManager
-                .InstantiateAndSpawn(bulletObject, position: _transform.position + Vector3.up, rotation: bulletPrefab.transform.rotation);
+                .InstantiateAndSpawn(bulletObject, ownerClientId: owner, position: _transform.position + Vector3.up, rotation: bulletPrefab.transform.rotation);
             
-            bulletInstance.TryGetComponent(out Bullet bullet);
+            bulletInstance.TryGetComponent(out GunBullet bullet);
             {
                 bullet.SetHost(this);
                 SuccessRateCheck();
             }
         }
-        
+
         private void SuccessRateCheck()
         {
             shotCount++;
@@ -135,11 +123,6 @@ namespace GunFishing.Gun
                 hitCount = 0;
             }
         }
-        
-        // private GameObject GetObjectFromPool()
-        // {
-        //     //return ObjectPool.ObjectPool.Instance.SpawnFromPool(bulletTag, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
-        // }
 
         public void RegisterHit()
         {
@@ -154,6 +137,7 @@ namespace GunFishing.Gun
                 FishSpawner.Instance.SpawnEasyFish();
             }
         }
+        
         private void GunMove()
         {
             if (cameraMain == null)
@@ -169,26 +153,37 @@ namespace GunFishing.Gun
             
                 if (worldPosition.x is < MouseBounds and > -MouseBounds)
                 {
-                    var newPosition = new Vector2(worldPosition.x, PosY);
-                    _transform.position = newPosition;
-                    UpdatePositionServerRpc(newPosition);
-                    
-                    // if (Time.deltaTime - _lastPositionUpdateTime >= PositionUpdateInterval)
-                    // {
-                    //     _lastPositionUpdateTime = Time.deltaTime;
-                    //     UpdatePositionServerRpc(newPosition);
-                    // }
+                    UpdatePosition(worldPosition);
                 }
+            }
+        }
+
+        private void UpdatePosition(Vector2 worldPosition)
+        {
+            var newPosition = new Vector2(worldPosition.x, PosY);
+            _transform.position = newPosition;
+            UpdatePositionServerRpc(newPosition);
+        }
+        
+        [ServerRpc(Delivery = RpcDelivery.Unreliable)]
+        private void UpdatePositionServerRpc(Vector2 newPosition)
+        {
+            if ((_networkPosition.Value - newPosition).sqrMagnitude > 0.01f)
+            {
+                _networkPosition.Value = newPosition;
             }
         }
         
         [ServerRpc]
-        private void UpdatePositionServerRpc(Vector2 newPosition)
+        private void SetPlayerInfoServerRpc(ulong playerId)
         {
-            if ((networkPosition.Value - newPosition).sqrMagnitude > 0.01f)
+            if (RoomPlayersManager.Instance == null)
             {
-                networkPosition.Value = newPosition;
+                Debug.LogError("Failed to find RoomPlayersManager.Instance");
+                return;
             }
+            
+            RoomPlayersManager.Instance.AddPlayer(playerId, this);
         }
     }
 }

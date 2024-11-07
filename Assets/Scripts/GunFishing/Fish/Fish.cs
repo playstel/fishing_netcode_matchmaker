@@ -1,3 +1,4 @@
+using System;
 using GunFishing.Gun;
 using GunFishing.Score;
 using Unity.Netcode;
@@ -11,43 +12,71 @@ namespace GunFishing.Fish
         public enum VolatilityLevel { Common, Rare, Legendary }
         public enum FishType { Rust, Purple, Gold }
 
-        public FishType fishType;
-        public VolatilityLevel volatility = VolatilityLevel.Common;
-        public int points = 10;        
-        public float baseSpeed = 2f;   
+        public float baseSpeed = 1;
+        public NetworkVariable<float> speed = new();         
+        public FishType fishType = new FishType();
+        
+        public NetworkVariable<VolatilityLevel> volatility = new NetworkVariable<VolatilityLevel>();
+        public NetworkVariable<int> points = new NetworkVariable<int>();        
+        
         public GameObject fxPrefab;
-        private float speed;           
         
         private Vector2 movementDirection;
+        private float _timer;
+        private float stepTime = 0.01f;
         
-        //public NetworkVariable<Vector2> networkPosition = new NetworkVariable<Vector2>();
         public NetworkVariable<bool> isCaught = new NetworkVariable<bool>(false);
-
-        public void SetVolatilityLevel(VolatilityLevel level)
+        public NetworkVariable<bool> isReady = new NetworkVariable<bool>(false);
+        
+        private void Start()
         {
-            volatility = level;
+            SetVolatilityLevelServerRpc();
+        }
+
+        [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void SetVolatilityLevelServerRpc()
+        {
+            if (isReady.Value) return;
+            
+            isReady.Value = true;
+
+            SetVolatilityLevelClientRpc((int)GetRandomVolatilityLevel());
+        }
+
+        private VolatilityLevel GetRandomVolatilityLevel()
+        {
+            return Random.value switch
+            {
+                < 0.6f => Fish.VolatilityLevel.Common,    
+                < 0.9f => Fish.VolatilityLevel.Rare,  
+                _ => Fish.VolatilityLevel.Legendary
+            };
+        }
+
+        [ClientRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void SetVolatilityLevelClientRpc(int level)
+        {
+            volatility = new NetworkVariable<VolatilityLevel>((VolatilityLevel)level);       
             
             switch (level)
             {
-                case VolatilityLevel.Common:
-                    speed = baseSpeed;
-                    points = 10;
+                case 0:
+                    speed = new NetworkVariable<float>(baseSpeed);
+                    points = new NetworkVariable<int>(10);
                     break;
-                case VolatilityLevel.Rare:
-                    speed = baseSpeed * 1.5f;
-                    points = 20;
+                case 1:
+                    speed = new NetworkVariable<float>(baseSpeed * 1.5f);
+                    points = new NetworkVariable<int>(20);
                     break;
-                case VolatilityLevel.Legendary:
-                    speed = baseSpeed * 2.5f;
-                    points = 40;
+                case 2:
+                    speed = new NetworkVariable<float>(baseSpeed * 2.5f);
+                    points = new NetworkVariable<int>(40);
                     break;
             }
 
             movementDirection = GetRandomDirection();
         }
 
-        private float _timer;
-        private float stepTime = 0.01f;
         
         private void Update()
         {
@@ -64,16 +93,9 @@ namespace GunFishing.Fish
                         movementDirection = GetRandomDirection();
                     }
                 }
-            
-                //transform.Translate(movementDirection * speed * Time.deltaTime);
-                
-                Vector2 newPosition = (Vector2)transform.position + movementDirection * speed * Time.deltaTime;
-                //networkPosition.Value = newPosition;
+
+                Vector2 newPosition = (Vector2)transform.position + movementDirection * speed.Value * Time.deltaTime;
                 transform.position = newPosition;
-            }
-            else
-            {
-                //transform.position = networkPosition.Value;
             }
         }
         
@@ -85,7 +107,7 @@ namespace GunFishing.Fish
 
         private float GetVolatilityChangeRate()
         {
-            return volatility switch
+            return volatility.Value switch
             {
                 VolatilityLevel.Common => 0.01f,   
                 VolatilityLevel.Rare => 0.05f,
@@ -94,25 +116,6 @@ namespace GunFishing.Fish
             };
         }
 
-        public override void OnDestroy()
-        {
-            Instantiate(fxPrefab, transform.position, Quaternion.identity, parent: null);
-        }
-
-        [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
-        private void CatchFishServerRpc(ulong playerId)
-        {
-            if (isCaught.Value) return;
-            
-            isCaught.Value = true;
-                
-            Debug.Log($"Fish caught by player {playerId}");
-                
-            RoomInfoUi.Instance.RegisterShot(points, $"{volatility} {fishType} fish");
-                
-            Destroy(gameObject);
-        }
-        
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other == null)
@@ -123,12 +126,42 @@ namespace GunFishing.Fish
             
             if (!other.CompareTag("Bullet")) return;
 
-            // if (other.GetComponent<Bullet>())
-            // {
-            //     other.GetComponent<Bullet>().RegisterHit();
-            // }
-                
-            CatchFishServerRpc(NetworkManager.Singleton.LocalClientId);
+            if (other.TryGetComponent(out GunFishing.Gun.GunBullet bullet))
+            {
+                CatchFishServerRpc(bullet.OwnerClientId);
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void CatchFishServerRpc(ulong playerId)
+        {
+            if (isCaught.Value) return;
+            
+            isCaught.Value = true;
+            
+            UpdateClientRpc(playerId);
+            
+            RoomInfoUi.Instance.AddTotalScore(points.Value);
+
+            NetworkObject.Destroy(gameObject);
+        }
+
+        [ClientRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void UpdateClientRpc(ulong playerId)
+        {
+            Debug.Log($"Fish caught by player {playerId}");
+
+            RoomInfoUi.Instance.RegisterShot(points.Value, $"{volatility.Value} {fishType} fish", playerId);
+            
+            if (playerId == NetworkManager.Singleton.LocalClientId)
+            {
+                RoomPlayersManager.Instance.RegisterHit(playerId);
+            }
+        }
+
+        public override void OnDestroy()
+        {
+            Instantiate(fxPrefab, transform.position, Quaternion.identity, parent: null);
         }
     }
 }

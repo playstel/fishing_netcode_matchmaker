@@ -1,4 +1,4 @@
-namespace GunFishing.ObjectPool
+namespace GunFishing.Object
 {
     using UnityEngine;
     

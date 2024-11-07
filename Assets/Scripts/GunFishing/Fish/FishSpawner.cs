@@ -54,25 +54,13 @@ namespace GunFishing.Fish
         
         private void SpawnFish(NetworkObject fishPrefab, Vector2 spawnPosition)
         {
-            var fishInstance = NetworkRelay.Instance.NetworkManager.SpawnManager
+            NetworkRelay.Instance.NetworkManager.SpawnManager
                 .InstantiateAndSpawn(fishPrefab, position:spawnPosition, rotation: Quaternion.identity);
-            
-            fishInstance.GetComponent<Fish>().SetVolatilityLevel(GetRandomVolatilityLevel());
         }
         
         private Vector2 SpawnPosition()
         {
             return new Vector2(Random.Range(-spawnRangeX, spawnRangeX), Random.Range(-spawnRangeY, spawnRangeY));
-        }
-
-        private Fish.VolatilityLevel GetRandomVolatilityLevel()
-        {
-            return Random.value switch
-            {
-                < 0.6f => Fish.VolatilityLevel.Common,    
-                < 0.9f => Fish.VolatilityLevel.Rare,  
-                _ => Fish.VolatilityLevel.Legendary
-            };
         }
     }
 
