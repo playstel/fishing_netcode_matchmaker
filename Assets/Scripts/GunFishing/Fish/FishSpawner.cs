@@ -6,10 +6,6 @@ namespace GunFishing.Fish
 {
     public class FishSpawner : NetworkBehaviour
     {
-        [Header("Fish tags")]
-        public string[] fishTags;   
-        public string easyFishTag;        
-        
         [Header("Fish prefabs")]
         public NetworkObject[] fishPrefabs;   
         public NetworkObject easyFishPrefab; 
@@ -58,9 +54,6 @@ namespace GunFishing.Fish
         
         private void SpawnFish(NetworkObject fishPrefab, Vector2 spawnPosition)
         {
-            //var fish = ObjectPool.ObjectPool.Instance.SpawnFromPool(fishTag, spawnPosition, Quaternion.identity);
-            //var fish = Instantiate(fishPrefab, spawnPosition, Quaternion.identity);
-            
             var fishInstance = NetworkRelay.Instance.NetworkManager.SpawnManager
                 .InstantiateAndSpawn(fishPrefab, position:spawnPosition, rotation: Quaternion.identity);
             

@@ -20,7 +20,7 @@ namespace GunFishing.Fish
         
         private Vector2 movementDirection;
         
-        public NetworkVariable<Vector2> networkPosition = new NetworkVariable<Vector2>();
+        //public NetworkVariable<Vector2> networkPosition = new NetworkVariable<Vector2>();
         public NetworkVariable<bool> isCaught = new NetworkVariable<bool>(false);
 
         public void SetVolatilityLevel(VolatilityLevel level)
@@ -68,12 +68,12 @@ namespace GunFishing.Fish
                 //transform.Translate(movementDirection * speed * Time.deltaTime);
                 
                 Vector2 newPosition = (Vector2)transform.position + movementDirection * speed * Time.deltaTime;
-                networkPosition.Value = newPosition;
+                //networkPosition.Value = newPosition;
                 transform.position = newPosition;
             }
             else
             {
-                transform.position = networkPosition.Value;
+                //transform.position = networkPosition.Value;
             }
         }
         
@@ -94,6 +94,11 @@ namespace GunFishing.Fish
             };
         }
 
+        public override void OnDestroy()
+        {
+            Instantiate(fxPrefab, transform.position, Quaternion.identity, parent: null);
+        }
+
         [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
         private void CatchFishServerRpc(ulong playerId)
         {
@@ -103,8 +108,6 @@ namespace GunFishing.Fish
                 
             Debug.Log($"Fish caught by player {playerId}");
                 
-            Instantiate(fxPrefab, transform.position, Quaternion.identity, parent: null);
-                
             RoomInfoUi.Instance.RegisterShot(points, $"{volatility} {fishType} fish");
                 
             Destroy(gameObject);
@@ -112,9 +115,18 @@ namespace GunFishing.Fish
         
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!other.CompareTag("Bullet")) return;
+            if (other == null)
+            {
+                Debug.LogError("Failed to find trigger collider");
+                return;
+            }
             
-            other.GetComponent<Bullet>().RegisterHit();
+            if (!other.CompareTag("Bullet")) return;
+
+            // if (other.GetComponent<Bullet>())
+            // {
+            //     other.GetComponent<Bullet>().RegisterHit();
+            // }
                 
             CatchFishServerRpc(NetworkManager.Singleton.LocalClientId);
         }

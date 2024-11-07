@@ -1,5 +1,6 @@
 using GunFishing.Fish;
 using GunFishing.Score;
+using Network;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,13 +9,17 @@ namespace GunFishing.Gun
     public class Gun : NetworkBehaviour
     {
         public GameObject bulletPrefab;
-        //public string bulletTag = "Bullet";
+        public NetworkObject bulletObject;
 
         public float fireRate = 12f;
         
-        [SerializeField] private int shotCount = 0;       
-        [SerializeField] private int hitCount = 0;
-        [SerializeField] private Camera cameraMain;
+        private int shotCount = 0;       
+        private int hitCount = 0;
+        private Camera cameraMain;
+        
+        // private float _lastPositionUpdateTime = 0f;
+        // private const float PositionUpdateInterval = 0.005f;
+
         
         private Transform _transform;
         
@@ -26,7 +31,6 @@ namespace GunFishing.Gun
         private const int MouseBounds = 7;
         
         private NetworkVariable<Vector2> networkPosition = new NetworkVariable<Vector2>();
-        private NetworkVariable<bool> isShooting = new NetworkVariable<bool>();
 
         
         public override void OnNetworkSpawn()
@@ -61,36 +65,12 @@ namespace GunFishing.Gun
             }
             else
             {
-                _transform.position = networkPosition.Value;
+                _transform.position = Vector2.Lerp(_transform.position, networkPosition.Value, Time.deltaTime * 10f);
             }
         }
 
         private void GunShoot()
         {
-            // if (Input.GetKeyDown(KeyCode.Space))
-            // {
-            //     _isAutomaticMode = !_isAutomaticMode;
-            //     UpdateFireModeUi();
-            // }
-            //
-            // if (_isAutomaticMode)
-            // {
-            //     if (Input.GetMouseButton(0) && Time.time >= _nextShotTime)
-            //     {
-            //         Shoot();
-            //         _nextShotTime = Time.time + (1f / fireRate); 
-            //     }
-            // }
-            // else
-            // {
-            //     if (Input.GetMouseButtonDown(0) && Time.time >= _nextShotTime)
-            //     {
-            //         Shoot();
-            //         _nextShotTime = Time.time + (1f / fireRate);
-            //     }
-            // }
-            
-            
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 _isAutomaticMode = !_isAutomaticMode;
@@ -119,21 +99,24 @@ namespace GunFishing.Gun
         [ServerRpc]
         private void ShootServerRpc()
         {
-            ShootClientRpc();
-        }
-        
-        [ClientRpc]
-        private void ShootClientRpc()
-        {
+            //ShootClientRpc();
             Shoot();
         }
         
-
+        // [ClientRpc]
+        // private void ShootClientRpc()
+        // {
+        //     Shoot();
+        // }
+        
         private void Shoot()
         {
             //var bulletInstance = GetObjectFromPool();
-            var bulletInstance = Instantiate(bulletPrefab, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
+            //var bulletInstance = Instantiate(bulletPrefab, _transform.position + Vector3.up, bulletPrefab.transform.rotation);
 
+            var bulletInstance = NetworkRelay.Instance.NetworkManager.SpawnManager
+                .InstantiateAndSpawn(bulletObject, position: _transform.position + Vector3.up, rotation: bulletPrefab.transform.rotation);
+            
             bulletInstance.TryGetComponent(out Bullet bullet);
             {
                 bullet.SetHost(this);
@@ -171,7 +154,6 @@ namespace GunFishing.Gun
                 FishSpawner.Instance.SpawnEasyFish();
             }
         }
-        
         private void GunMove()
         {
             if (cameraMain == null)
@@ -189,8 +171,13 @@ namespace GunFishing.Gun
                 {
                     var newPosition = new Vector2(worldPosition.x, PosY);
                     _transform.position = newPosition;
-                    
                     UpdatePositionServerRpc(newPosition);
+                    
+                    // if (Time.deltaTime - _lastPositionUpdateTime >= PositionUpdateInterval)
+                    // {
+                    //     _lastPositionUpdateTime = Time.deltaTime;
+                    //     UpdatePositionServerRpc(newPosition);
+                    // }
                 }
             }
         }
@@ -198,7 +185,10 @@ namespace GunFishing.Gun
         [ServerRpc]
         private void UpdatePositionServerRpc(Vector2 newPosition)
         {
-            networkPosition.Value = newPosition;
+            if ((networkPosition.Value - newPosition).sqrMagnitude > 0.01f)
+            {
+                networkPosition.Value = newPosition;
+            }
         }
     }
 }

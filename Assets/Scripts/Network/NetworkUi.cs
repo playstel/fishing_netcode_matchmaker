@@ -8,7 +8,7 @@ namespace Network
     {
         [SerializeField] private Button buttonJoin;
         [SerializeField] private Button buttonHost;
-        [SerializeField] private TMP_InputField inputJoin;
+        [SerializeField] private InputField inputJoin;
         
         private void Awake()
         {
