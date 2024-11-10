@@ -3,17 +3,21 @@ using UnityEngine;
 
 namespace Network
 {
-    public class NetworkMessages : MonoBehaviour
+    public class NetworkStatusInfo : MonoBehaviour
     {
         [SerializeField] private TMP_Text textJoinInfo;
         [SerializeField] private TMP_Text textJoinCode;
 
-        public static NetworkMessages Instance;
+        public static NetworkStatusInfo Instance;
 
         private void Awake()
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(this);
+            }
+            else Destroy(gameObject);
         }
 
         public void SetInfo(string info)

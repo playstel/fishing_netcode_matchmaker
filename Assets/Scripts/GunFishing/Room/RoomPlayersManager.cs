@@ -12,13 +12,8 @@ namespace GunFishing.Score
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                Debug.Log("Set RoomPlayersManager as singleton");
-            }
-            else
-                Destroy(gameObject);
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
         }
 
         public void AddPlayer(ulong playerId, Gun.Gun playerPrefab)
@@ -26,17 +21,7 @@ namespace GunFishing.Score
             if(playerList.ContainsKey(playerId)) return;
             playerList.Add(playerId, playerPrefab);
         }
-        
-        public void AddPlayerScore(ulong playerId, int score)
-        {
-            playerList.TryGetValue(playerId, out var gun);
-            
-            // if (gun)
-            // {
-            //     gun
-            // }
-        }
-        
+
         public void RegisterHit(ulong playerId)
         {
             playerList.TryGetValue(playerId, out var gun);

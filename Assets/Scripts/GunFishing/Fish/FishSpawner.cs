@@ -19,7 +19,8 @@ namespace GunFishing.Fish
         
         private void Awake()
         {
-            Instance = this;
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
         }
         
         private void Start()
@@ -54,7 +55,7 @@ namespace GunFishing.Fish
         
         private void SpawnFish(NetworkObject fishPrefab, Vector2 spawnPosition)
         {
-            NetworkRelay.Instance.NetworkManager.SpawnManager
+            NetworkManager.Singleton.SpawnManager
                 .InstantiateAndSpawn(fishPrefab, position:spawnPosition, rotation: Quaternion.identity);
         }
         

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Menu;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -15,19 +16,27 @@ namespace Network
     public class NetworkRelay : MonoBehaviour
     {
         public static NetworkRelay Instance;
-        public NetworkManager NetworkManager;
-        private string _gameSceneName = "2_Fishing";
+        
         private string _transportProtocol = "dtls";
 
         private void Awake()
         {
-            Instance = this;
-            NetworkManager = GetComponent<NetworkManager>();
-            DontDestroyOnLoad(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(this);
+            }
+            else Destroy(gameObject);
         }
         
         private async void Start()
         {
+            if (Application.platform == RuntimePlatform.LinuxServer)
+            {
+                Debug.Log("Relay disabled");
+                return;
+            }
+            
             await UnityServices.InitializeAsync();
 
             AuthenticationService.Instance.SignedIn += () =>
@@ -48,11 +57,11 @@ namespace Network
             }
         }
         
-        public async Task CreateRelay()
+        public async Task<bool> CreateRelay()
         {
             try
             {
-                NetworkMessages.Instance.SetInfo("Creating Relay");
+                NetworkStatusInfo.Instance.SetInfo("Creating Relay");
                 
                 var allocation = await Unity.Services.Relay.Relay.Instance.CreateAllocationAsync(3);
             
@@ -64,42 +73,33 @@ namespace Network
             
                 var result = NetworkManager.Singleton.StartHost();
             
-                NetworkMessages.Instance.SetJoinCode(joinCode);
-                NetworkMessages.Instance.SetInfo($"Created: {result}");
+                NetworkStatusInfo.Instance.SetJoinCode(joinCode);
+                
+                if (result)
+                {
+                    NetworkStatusInfo.Instance.SetInfo($"You are the host");
+                    MenuRoomLoader.Instance.LoadGameScene();
+                }
+                else
+                {
+                    NetworkStatusInfo.Instance.SetInfo($"Failed to create a host");
+                }
 
-                if (result) StartGame(); 
+                return result;
             }
             catch (Exception e)
             {
                 Debug.LogError($"Relay error: {e.Message}");
-                NetworkMessages.Instance.SetInfo($"Relay error: {e.Message}");
+                NetworkStatusInfo.Instance.SetInfo($"Relay error: {e.Message}");
+                return false;
             }
         }
 
-        private void StartGame()
+        public async Task<bool> JoinRelay(string code)
         {
-            if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost)
-            {
-                NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
-            }
-            else
-            {
-                Debug.LogError("This instance is not the host.");
-                NetworkMessages.Instance.SetInfo("This instance is not the host.");
-            }
-        }
-
-        public async Task JoinRelay(string code)
-        {
-            if (string.IsNullOrEmpty(code) || string.IsNullOrWhiteSpace(code))
-            {
-                NetworkMessages.Instance.SetInfo($"Code is null");
-                return;
-            }
-            
             try
             {
-                NetworkMessages.Instance.SetInfo($"Joining relay");
+                NetworkStatusInfo.Instance.SetInfo($"Joining relay");
                 
                 var joinAllocation = await Unity.Services.Relay.Relay.Instance.JoinAllocationAsync(code);
 
@@ -109,12 +109,23 @@ namespace Network
 
                 var result = NetworkManager.Singleton.StartClient();
 
-                NetworkMessages.Instance.SetInfo($"Joined: {result}");
+                if (result)
+                {
+                    NetworkStatusInfo.Instance.SetInfo($"Joined to the host");
+                }
+                else
+                {
+                    NetworkStatusInfo.Instance.SetInfo($"Failed to join to the host");
+                }
+
+                return result;
             }
             catch(Exception e)
             {
-                Debug.LogError($"Relay error: {e.Message}");
-                NetworkMessages.Instance.SetInfo($"Relay error: {e.Message}");
+                Debug.LogError($"Host error: {e.Message}");
+                NetworkStatusInfo.Instance.SetInfo($"Host error: {e.Message}");
+                
+                return false;
             }
         }
     }

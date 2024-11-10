@@ -102,7 +102,7 @@ namespace GunFishing.Gun
         [ServerRpc]
         private void ShootServerRpc(ulong owner)
         {
-            var bulletInstance = NetworkRelay.Instance.NetworkManager.SpawnManager
+            var bulletInstance = NetworkManager.Singleton.SpawnManager
                 .InstantiateAndSpawn(bulletObject, ownerClientId: owner, position: _transform.position + Vector3.up, rotation: bulletPrefab.transform.rotation);
             
             bulletInstance.TryGetComponent(out GunBullet bullet);

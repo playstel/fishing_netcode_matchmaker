@@ -20,12 +20,10 @@ namespace GunFishing.Score
         public TMP_Text totalScoreText;    
         public TMP_Text shootingModeText;    
 
-        void Awake()
+        private void Awake()
         {
-            if (Instance == null)
-                Instance = this;
-            else
-                Destroy(gameObject);
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
         }
 
         private void Start()
