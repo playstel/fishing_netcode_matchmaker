@@ -12,12 +12,11 @@ using UnityEngine.SceneManagement;
 
 namespace Network
 {
-    [RequireComponent(typeof(NetworkManager))]
     public class NetworkRelay : MonoBehaviour
     {
         public static NetworkRelay Instance;
         
-        private string _transportProtocol = "dtls";
+        [SerializeField] private string _transportProtocol = "dtls";
 
         private void Awake()
         {
@@ -27,34 +26,6 @@ namespace Network
                 DontDestroyOnLoad(this);
             }
             else Destroy(gameObject);
-        }
-        
-        private async void Start()
-        {
-            if (Application.platform == RuntimePlatform.LinuxServer)
-            {
-                Debug.Log("Relay disabled");
-                return;
-            }
-            
-            await UnityServices.InitializeAsync();
-
-            AuthenticationService.Instance.SignedIn += () =>
-            {
-                Debug.Log("Signed in: " + AuthenticationService.Instance.PlayerId);
-            };
-
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-        }
-        
-        private void OnClientConnected(ulong clientId)
-        {
-            if (NetworkManager.Singleton.IsHost)
-            {
-                Debug.Log($"Client {clientId} connected. Current scene: {SceneManager.GetActiveScene().name}");
-            }
         }
         
         public async Task<bool> CreateRelay()
@@ -69,16 +40,14 @@ namespace Network
 
                 var relayServerData = new RelayServerData(allocation, _transportProtocol);
 
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-            
-                var result = NetworkManager.Singleton.StartHost();
+                var result = NetworkUnityServices.Instance.StartRelayHost(relayServerData);
             
                 NetworkStatusInfo.Instance.SetJoinCode(joinCode);
                 
                 if (result)
                 {
                     NetworkStatusInfo.Instance.SetInfo($"You are the host");
-                    MenuRoomLoader.Instance.LoadGameSceneAsHost();
+                    NetworkSceneLoader.Instance.LoadGameSceneAsHost();
                 }
                 else
                 {
@@ -105,9 +74,7 @@ namespace Network
 
                 var relayServerData = new RelayServerData(joinAllocation, _transportProtocol);
 
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-
-                var result = NetworkManager.Singleton.StartClient();
+                var result = NetworkUnityServices.Instance.StartRelayClient(relayServerData);
 
                 if (result)
                 {

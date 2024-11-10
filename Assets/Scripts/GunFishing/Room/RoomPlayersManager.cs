@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GunFishing.Score
@@ -12,7 +13,11 @@ namespace GunFishing.Score
 
         private void Awake()
         {
-            if (Instance == null) Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(this);
+            }
             else Destroy(gameObject);
         }
 

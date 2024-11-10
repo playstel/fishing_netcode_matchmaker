@@ -8,6 +8,9 @@ namespace Menu
 {
     public class MenuUi : MonoBehaviour
     {
+        [Header("Matchmaking")] 
+        [SerializeField] private Button buttonCreateTicket;
+        
         [Header("Dedicated Server")] 
         [SerializeField] private Button buttonJoinServer;
         [SerializeField] private InputField inputServerIp;
@@ -26,6 +29,7 @@ namespace Menu
             buttonHostRelay.onClick.AddListener(CreateRelay);
             buttonJoinRelay.onClick.AddListener(() => JoinRelay(inputJoinRelay.text));
             buttonJoinServer.onClick.AddListener(() => JoinServer(inputServerIp.text, inputServerPort.text));
+            buttonCreateTicket.onClick.AddListener(CreateMultiplayerTicket);
         }
 
         private void JoinServer(string ip, string port)
@@ -43,7 +47,7 @@ namespace Menu
             }
 
             LoadingPanel(true);
-            var result = NetworkServer.NetworkServer.Instance.JoinToServer(ip, port);
+            var result = NetworkServer.NetworkDedicatedServer.Instance.JoinToServer(ip, port);
             if(!result) LoadingPanel(false);
         }
         
@@ -66,6 +70,14 @@ namespace Menu
             var result = await NetworkRelay.Instance.CreateRelay();
             if(!result) LoadingPanel(false);
         }
+        
+        private async void CreateMultiplayerTicket()
+        {
+            LoadingPanel(true);
+            var result = await NetworkMatchmakingClient.Instance.CreateMultiplayerTicketAndSession();
+            if(!result) LoadingPanel(false);
+        }
+
 
         private void LoadingPanel(bool state)
         {

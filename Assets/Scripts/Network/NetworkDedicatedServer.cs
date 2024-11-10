@@ -12,9 +12,9 @@ using UnityEngine.UI;
 
 namespace NetworkServer
 {
-    public class NetworkServer : MonoBehaviour
+    public class NetworkDedicatedServer : MonoBehaviour
     {
-        public static NetworkServer Instance;
+        public static NetworkDedicatedServer Instance;
 
         [SerializeField] private ushort maxPlayers = 4;
 
@@ -45,11 +45,17 @@ namespace NetworkServer
 
                 if (serverConfig.AllocationId != string.Empty)
                 {
-                    NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("0.0.0.0", serverConfig.Port, "0.0.0.0");
+                    var result = NetworkUnityServices.Instance.StartDedicatedServer(serverConfig);
 
-                    NetworkManager.Singleton.StartServer();
-
-                    await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                    if (result)
+                    {
+                        Debug.Log("Server has started");
+                        await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to start the server");
+                    }
                 }
             }
         }
@@ -73,18 +79,14 @@ namespace NetworkServer
         {
             try
             {
-                UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            
-                transport.SetConnectionData(ipAddress, ushort.Parse(port));
-
-                var result = NetworkManager.Singleton.StartClient();
+                var result = NetworkUnityServices.Instance.StartClient(ipAddress, port);
                 
                 Debug.Log("Joined the server: " + result);
                 
                 if (result)
                 {
                     NetworkStatusInfo.Instance.SetInfo($"Joined the server");
-                    MenuRoomLoader.Instance.LoadGameSceneAsServerClient();
+                    NetworkSceneLoader.Instance.LoadGameSceneAsServerClient();
                 }
                 else
                 {
