@@ -78,7 +78,7 @@ namespace Network
                 if (result)
                 {
                     NetworkStatusInfo.Instance.SetInfo($"You are the host");
-                    MenuRoomLoader.Instance.LoadGameScene();
+                    MenuRoomLoader.Instance.LoadGameSceneAsHost();
                 }
                 else
                 {

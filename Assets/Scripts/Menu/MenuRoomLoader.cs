@@ -1,5 +1,6 @@
 using Network;
 using Unity.Netcode;
+using Unity.Services.Multiplay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,7 +21,7 @@ namespace Menu
             else Destroy(gameObject);
         }
         
-        public void LoadGameScene()
+        public void LoadGameSceneAsHost()
         {
             if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost)
             {
@@ -31,6 +32,11 @@ namespace Menu
                 Debug.LogError("This instance is not the host.");
                 NetworkStatusInfo.Instance.SetInfo("This instance is not the host.");
             }
+        }
+        
+        public void LoadGameSceneAsServerClient()
+        {
+            Debug.Log("LoadGameSceneAsServerClient");
         }
     }
 }

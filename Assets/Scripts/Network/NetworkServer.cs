@@ -84,7 +84,7 @@ namespace NetworkServer
                 if (result)
                 {
                     NetworkStatusInfo.Instance.SetInfo($"Joined the server");
-                    MenuRoomLoader.Instance.LoadGameScene();
+                    MenuRoomLoader.Instance.LoadGameSceneAsServerClient();
                 }
                 else
                 {

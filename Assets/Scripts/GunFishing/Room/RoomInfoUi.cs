@@ -12,8 +12,8 @@ namespace GunFishing.Score
     {
         public static RoomInfoUi Instance;
 
-        private NetworkVariable<int> _totalScore = new();
         private int TotalScore;
+        private NetworkVariable<int> _totalScore = new();
         private List<RoomShotResult> _recentShots = new List<RoomShotResult>();  
 
         public TMP_Text recentShotsText;   
