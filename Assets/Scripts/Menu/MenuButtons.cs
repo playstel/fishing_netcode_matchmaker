@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Menu
 {
-    public class MenuUi : MonoBehaviour
+    public class MenuButtons : MonoBehaviour
     {
         [Header("Matchmaking")] 
         [SerializeField] private Button buttonCreateTicket;
@@ -20,9 +20,6 @@ namespace Menu
         [SerializeField] private Button buttonHostRelay;
         [SerializeField] private Button buttonJoinRelay;
         [SerializeField] private InputField inputJoinRelay;
-
-        [Header("Loading panel")] 
-        [SerializeField] private GameObject loadingPanel;
 
         private void Awake()
         {
@@ -46,9 +43,9 @@ namespace Menu
                 return;
             }
 
-            LoadingPanel(true);
+            MenuPanels.Instance.PanelLoading(true);
             var result = NetworkServer.NetworkDedicatedServer.Instance.JoinToServer(ip, port);
-            if(!result) LoadingPanel(false);
+            if(!result) MenuPanels.Instance.PanelLoading(false);
         }
         
         private async void JoinRelay(string inputJoinText)
@@ -59,29 +56,23 @@ namespace Menu
                 return;
             }
             
-            LoadingPanel(true);
+            MenuPanels.Instance.PanelLoading(true);
             var result = await NetworkRelay.Instance.JoinRelay(inputJoinText);
-            if(!result) LoadingPanel(false);
+            if(!result) MenuPanels.Instance.PanelLoading(false);
         }
 
         private async void CreateRelay()
         {
-            LoadingPanel(true);
+            MenuPanels.Instance.PanelLoading(true);
             var result = await NetworkRelay.Instance.CreateRelay();
-            if(!result) LoadingPanel(false);
+            if(result == null) MenuPanels.Instance.PanelLoading(false);
         }
         
         private async void CreateMultiplayerTicket()
         {
-            LoadingPanel(true);
+            MenuPanels.Instance.PanelLoading(true);
             var result = await NetworkMatchmakingClient.Instance.CreateMultiplayerTicketAndSession();
-            if(!result) LoadingPanel(false);
-        }
-
-
-        private void LoadingPanel(bool state)
-        {
-            loadingPanel.SetActive(state);
+            if(!result) MenuPanels.Instance.PanelLoading(false);
         }
     }
 }

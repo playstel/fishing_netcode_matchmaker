@@ -28,7 +28,7 @@ namespace Network
             else Destroy(gameObject);
         }
         
-        public async Task<bool> CreateRelay()
+        public async Task<string> CreateRelay(bool loadGameScene = true)
         {
             try
             {
@@ -36,34 +36,39 @@ namespace Network
                 
                 var allocation = await Unity.Services.Relay.Relay.Instance.CreateAllocationAsync(3);
             
-                var joinCode = await Unity.Services.Relay.Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
+                var relayJoinCode = await Unity.Services.Relay.Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
                 var relayServerData = new RelayServerData(allocation, _transportProtocol);
 
                 var result = NetworkUnityServices.Instance.StartRelayHost(relayServerData);
             
-                NetworkStatusInfo.Instance.SetJoinCode(joinCode);
+                NetworkStatusInfo.Instance.SetJoinCode(relayJoinCode);
                 
                 if (result)
                 {
                     NetworkStatusInfo.Instance.SetInfo($"You are the host");
-                    NetworkSceneLoader.Instance.LoadGameSceneAsHost();
+                    
+                    if (loadGameScene)
+                    {
+                        NetworkSceneLoader.Instance.LoadGameScene();
+                    }
                 }
                 else
                 {
                     NetworkStatusInfo.Instance.SetInfo($"Failed to create a host");
+                    return null;
                 }
 
-                return result;
+                return relayJoinCode;
             }
             catch (Exception e)
             {
                 Debug.LogError($"Relay error: {e.Message}");
                 NetworkStatusInfo.Instance.SetInfo($"Relay error: {e.Message}");
-                return false;
+                return null;
             }
         }
-
+        
         public async Task<bool> JoinRelay(string code)
         {
             try

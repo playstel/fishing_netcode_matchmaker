@@ -14,6 +14,8 @@ namespace Network
     public class NetworkUnityServices : MonoBehaviour
     {
         public static NetworkUnityServices Instance;
+
+        public bool signedIn;
         
         private void Awake()
         {
@@ -37,7 +39,7 @@ namespace Network
                 };
 
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            
+
                 NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             }
         }

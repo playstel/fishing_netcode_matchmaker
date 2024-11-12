@@ -21,33 +21,17 @@ namespace Menu
             }
             else Destroy(gameObject);
         }
-        
-        public void LoadGameSceneAsHost()
-        {
-            Debug.Log("LoadGameSceneAsHost");
-            LoadGameScene();
-        }
-        
-        public void LoadGameSceneAsServerClient()
-        {
-            Debug.Log("LoadGameSceneAsServerClient");
-            LoadGameScene();
-        }
-        
-        public void LoadGameSceneAsMultiplayerClientWithTicket()
-        {
-            Debug.Log("LoadGameSceneAsMultiplayerClientWithTicket");
-            LoadGameScene();
-        }
-        
+
         public void LoadGameScene()
         {
             if (IsClient && !IsHost)
             {
+                Debug.LogError("Request game scene as a client");
                 RequestSceneLoadServerRpc();
             }
             else if (IsServer)
             {
+                Debug.LogError("Load game scene as a host or server");
                 NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
             }
         }

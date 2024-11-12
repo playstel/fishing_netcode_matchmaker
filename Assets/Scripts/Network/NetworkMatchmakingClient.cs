@@ -71,7 +71,7 @@ namespace Network
 
                         if (result)
                         {
-                            NetworkSceneLoader.Instance.LoadGameSceneAsMultiplayerClientWithTicket();
+                            NetworkSceneLoader.Instance.LoadGameScene();
                         }
                         
                         return result;
