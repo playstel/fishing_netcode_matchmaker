@@ -23,13 +23,19 @@ namespace Menu
             else Destroy(gameObject);
         }
 
-        public async void LoadGameScene()
+        public async void LoadGameScene(bool directLoading = false)
         {
             Debug.Log("LoadGameScene | IsClient: " + IsClient + " | IsServer: " + IsServer + " | isHost: " + IsHost + " | IsOwnedByServer: " + IsOwnedByServer);
 
             MenuLoading.Instance.PanelLoading(true);
             
             await Task.Delay(200);
+
+            if (directLoading)
+            {
+                RequestSceneLoadServerRpc();
+                return;
+            }
             
             if (IsClient)
             {

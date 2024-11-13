@@ -5,6 +5,7 @@ using Network;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplay;
 using UnityEngine;
@@ -17,6 +18,10 @@ namespace NetworkServer
         public static NetworkDedicatedServer Instance;
 
         [SerializeField] private ushort maxPlayers = 4;
+        [SerializeField] private string serverName = "MyServer";
+        [SerializeField] private string gameType = "MyGameType";
+        [SerializeField] private string buildId = "8";
+        [SerializeField] private string map = "TestMap";
 
         private IServerQueryHandler _serverQueryHandler;
 
@@ -41,7 +46,7 @@ namespace NetworkServer
                 ServerConfig serverConfig = MultiplayService.Instance.ServerConfig;
 
                 _serverQueryHandler = await MultiplayService.Instance
-                    .StartServerQueryHandlerAsync(maxPlayers, "MyServer", "MyGameType", "0", "TestMap");
+                    .StartServerQueryHandlerAsync(maxPlayers, serverName, gameType, buildId, map);
 
                 if (serverConfig.AllocationId != string.Empty)
                 {
@@ -86,7 +91,7 @@ namespace NetworkServer
                 if (result)
                 {
                     NetworkStatusInfo.Instance.SetInfo($"Joined the server");
-                    NetworkSceneLoader.Instance.LoadGameScene();
+                    NetworkSceneLoader.Instance.LoadGameScene(true);
                 }
                 else
                 {

@@ -68,7 +68,7 @@ namespace Network
         
         public bool StartDedicatedServer(ServerConfig serverConfig)
         {
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("0.0.0.0", serverConfig.Port, "0.0.0.0");
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(serverConfig.IpAddress, serverConfig.Port);
 
             return NetworkManager.Singleton.StartServer();
         }
