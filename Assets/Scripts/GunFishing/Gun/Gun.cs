@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GunFishing.Fish;
 using GunFishing.Score;
 using Network;
@@ -27,6 +28,8 @@ namespace GunFishing.Gun
         private const float PosY = -3.7f;
         private const int CorrectionThreshold = 12;
         private const int MouseBounds = 7;
+        private const int StartPause = 3;
+        private bool _readyToShoot;
         
         private NetworkVariable<Vector2> _networkPosition = new NetworkVariable<Vector2>();
         
@@ -45,11 +48,13 @@ namespace GunFishing.Gun
             }
         }
 
-        private void Start()
+        private async void Start()
         {
             if (IsOwner)
             {
                 SetPlayerInfoServerRpc(NetworkManager.Singleton.LocalClientId);
+                await Task.Delay(1000);
+                _readyToShoot = true;
             }
         }
 
@@ -76,6 +81,8 @@ namespace GunFishing.Gun
 
         private void GunShoot()
         {
+            if (!_readyToShoot) return;
+            
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 _isAutomaticMode = !_isAutomaticMode;
@@ -83,11 +90,15 @@ namespace GunFishing.Gun
             }
 
             var canShoot = _isAutomaticMode ? Input.GetMouseButton(0) : Input.GetMouseButtonDown(0);
+            
+            Debug.Log("canShoot: " + canShoot);
 
             if (!canShoot || !(Time.time >= _nextShotTime)) return;
             
             _nextShotTime = Time.time + (1f / fireRate);
 
+            Debug.Log("ShootServerRpc: " + canShoot);
+            
             ShootServerRpc(NetworkManager.Singleton.LocalClientId);
         }
         

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Network;
 using Unity.Netcode;
 using Unity.Services.Multiplay;
@@ -22,18 +23,28 @@ namespace Menu
             else Destroy(gameObject);
         }
 
-        public void LoadGameScene()
+        public async void LoadGameScene()
         {
-            if (IsClient && !IsHost)
+            Debug.Log("LoadGameScene | IsClient: " + IsClient + " | IsServer: " + IsServer + " | isHost: " + IsHost + " | IsOwnedByServer: " + IsOwnedByServer);
+
+            MenuLoading.Instance.PanelLoading(true);
+            
+            await Task.Delay(200);
+            
+            if (IsClient)
             {
-                Debug.LogError("Request game scene as a client");
+                Debug.Log("Request game scene as a client");
                 RequestSceneLoadServerRpc();
             }
-            else if (IsServer)
+            else if (IsServer || IsHost)
             {
-                Debug.LogError("Load game scene as a host or server");
-                NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
+                Debug.Log("Load game scene as a host or server"); NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
             }
+            
+            await Task.Delay(200);
+            
+            MenuLoading.Instance.PanelLoading(false);
+            
         }
 
         [ServerRpc(RequireOwnership = false)]

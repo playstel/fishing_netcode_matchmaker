@@ -21,5 +21,10 @@ namespace Menu
             textLobbyName.text = lobby.Name;
             textLobbyPlayers.text = $"{lobby.Players.Count}/{lobby.MaxPlayers}";
         }
+
+        public Lobby GetLobby()
+        {
+            return _lobby;
+        }
     }
 }

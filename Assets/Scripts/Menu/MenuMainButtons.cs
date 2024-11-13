@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Menu
 {
-    public class MenuButtons : MonoBehaviour
+    public class MenuMainButtons : MonoBehaviour
     {
         [Header("Matchmaking")] 
         [SerializeField] private Button buttonCreateTicket;
@@ -43,9 +43,9 @@ namespace Menu
                 return;
             }
 
-            MenuPanels.Instance.PanelLoading(true);
+            MenuLoading.Instance.PanelLoading(true);
             var result = NetworkServer.NetworkDedicatedServer.Instance.JoinToServer(ip, port);
-            if(!result) MenuPanels.Instance.PanelLoading(false);
+            if(!result) MenuLoading.Instance.PanelLoading(false);
         }
         
         private async void JoinRelay(string inputJoinText)
@@ -56,23 +56,23 @@ namespace Menu
                 return;
             }
             
-            MenuPanels.Instance.PanelLoading(true);
+            MenuLoading.Instance.PanelLoading(true);
             var result = await NetworkRelay.Instance.JoinRelay(inputJoinText);
-            if(!result) MenuPanels.Instance.PanelLoading(false);
+            if(!result) MenuLoading.Instance.PanelLoading(false);
         }
 
         private async void CreateRelay()
         {
-            MenuPanels.Instance.PanelLoading(true);
+            MenuLoading.Instance.PanelLoading(true);
             var result = await NetworkRelay.Instance.CreateRelay();
-            if(result == null) MenuPanels.Instance.PanelLoading(false);
+            if(result == null) MenuLoading.Instance.PanelLoading(false);
         }
         
         private async void CreateMultiplayerTicket()
         {
-            MenuPanels.Instance.PanelLoading(true);
+            MenuLoading.Instance.PanelLoading(true);
             var result = await NetworkMatchmakingClient.Instance.CreateMultiplayerTicketAndSession();
-            if(!result) MenuPanels.Instance.PanelLoading(false);
+            if(!result) MenuLoading.Instance.PanelLoading(false);
         }
     }
 }

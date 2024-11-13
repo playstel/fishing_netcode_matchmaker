@@ -3,14 +3,11 @@ using UnityEngine;
 
 namespace Menu
 {
-    public class MenuPanels : MonoBehaviour
+    public class MenuLoading : MonoBehaviour
     {
-        public static MenuPanels Instance;
-
-        [Header("Loading panel")] 
+        public static MenuLoading Instance;
+        
         [SerializeField] private GameObject panelLoading;
-        [SerializeField] private GameObject panelLobby;
-        [SerializeField] private GameObject panelMain;
         
         private void Awake()
         {
@@ -24,11 +21,6 @@ namespace Menu
         public void PanelLoading(bool state)
         {
             panelLoading.SetActive(state);
-        }
-
-        public void PanelLobby(bool state)
-        {
-            panelLobby.SetActive(state);
         }
     }
 }

@@ -10,12 +10,15 @@ using static Unity.Services.Lobbies.Models.PlayerDataObject.VisibilityOptions;
 
 namespace Network
 {
-    public class MenuLobbyList : MonoBehaviour
+    public class NetworkLobby : MonoBehaviour
     {
-        private Lobby _joinedLobby;
+        private string joinedLobbyId;
+        private string joinedLobbyHostId;
+        private string playerId;
+        private string playerName;
         private Player _playerData;
         
-        public static MenuLobbyList Instance;
+        public static NetworkLobby Instance;
 
         private void Awake()
         {
@@ -27,7 +30,7 @@ namespace Network
             else Destroy(gameObject);
         }
         
-        public void CreateProfilePlayerData(string playerName = "Default player")
+        public void CreateProfilePlayerData(string playerName = "Player")
         {
             var playerDataObjectName = new PlayerDataObject(Public, GenerateRandomName(playerName));
 
@@ -43,8 +46,14 @@ namespace Network
             return playerName + UnityEngine.Random.Range(1,10000);
         }
 
-        public async Task<bool> CreateLobby(string lobbyName, bool relay = false, int maxPlayers = 4, string password = null)
+        public async Task<bool> CreateLobby(string lobbyName, bool relay = true, int maxPlayers = 4, string password = null)
         {
+            if (string.IsNullOrEmpty(lobbyName))
+            {
+                NetworkStatusInfo.Instance.SetInfo("Set lobby name first!");
+                return false;
+            }
+            
             if (_playerData == null)
             {
                 CreateProfilePlayerData();
@@ -72,7 +81,10 @@ namespace Network
                     options.Password = password;
                 }
                 
-                _joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
+                var result = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
+
+                InitLobby(result);
+                
                 return true;
             }
             catch (Exception e)
@@ -88,6 +100,10 @@ namespace Network
             if (CheckLobbyOwnership())
             {
                 NetworkSceneLoader.Instance.LoadGameScene();
+            }
+            else
+            {
+                Debug.LogError("You are not the owner of this lobby!");
             }
         }
 
@@ -109,18 +125,18 @@ namespace Network
                     options.Password = password;
                 }
 
-                if (!string.IsNullOrEmpty(lobby.Data["RelayJoinCode"].Value))
+                if (lobby.Data != null && lobby.Data["RelayJoinCode"] != null && !string.IsNullOrEmpty(lobby.Data["RelayJoinCode"].Value))
                 {
                     var code = lobby.Data["RelayJoinCode"].Value;
                     await NetworkRelay.Instance.JoinRelay(code);
-                    return true;
+                    //return true;
                 }
                 
                 var result = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
 
                 if (result == null) return false;
-                
-                _joinedLobby = result;
+
+                InitLobby(result);
                 
                 return true;
             }
@@ -130,6 +146,12 @@ namespace Network
                 NetworkStatusInfo.Instance.SetInfo("JoinLobby error: " + e);
                 return false;
             }
+        }
+
+        private void InitLobby(Lobby lobby)
+        {
+            joinedLobbyId = lobby.Id;
+            joinedLobbyHostId = lobby.HostId;
         }
 
         public async Task<List<Lobby>> GetLobbies(string filterByLobbyName = null)
@@ -175,16 +197,18 @@ namespace Network
             public string playerStatus;
         }
         
-        public List<LobbyPlayer> GetCurrentLobbyPlayers()
+        public List<LobbyPlayer> CreateCurrentLobbyPlayers(Lobby lobby)
         {
             var players = new List<LobbyPlayer>();
             
-            foreach (var player in _joinedLobby.Players)
+            foreach (var player in lobby.Players)
             {
+                Debug.Log("GetCurrentLobbyPlayers: " + player.Id);
+                
                 var lobbyPlayer = new LobbyPlayer();
 
                 lobbyPlayer.playerName = player.Data["Name"].Value;
-                lobbyPlayer.playerStatus = (_joinedLobby.HostId == player.Id) ? "Owner" : "User";
+                lobbyPlayer.playerStatus = (joinedLobbyHostId == player.Id) ? "Owner" : "User";
                 
                 players.Add(lobbyPlayer);
             }
@@ -194,18 +218,46 @@ namespace Network
 
         public bool CheckLobbyOwnership()
         {
-            if (_joinedLobby == null)
-            {
-                Debug.LogError("You are not in the lobby");
-                return false;
-            }
-            
-            return AuthenticationService.Instance.PlayerId == _joinedLobby.HostId;
+            return GetCurrentPlayerId() == joinedLobbyHostId;
         }
 
-        public bool CheckCurrentLobby()
+        private string GetCurrentPlayerId()
         {
-            return _joinedLobby != null;
+            return AuthenticationService.Instance.PlayerId;
+        }
+        
+        public string GetCurrentPlayerName()
+        {
+            return AuthenticationService.Instance.PlayerName;
+        }
+
+        public async Task<Lobby> GetCurrentLobby()
+        {
+            var lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobbyId);
+            
+            if (lobby == null)
+            {
+                Debug.LogError("You are not in the lobby");
+                return null;
+            }
+
+            return lobby;
+        }
+        
+        private async void OnDestroy()
+        {
+            var playerId = GetCurrentPlayerId();
+            
+            if (CheckLobbyOwnership())
+            {
+                await LobbyService.Instance.DeleteLobbyAsync(joinedLobbyId);
+                Debug.Log("DeleteLobbyAsync: " + joinedLobbyId);
+            }
+            else
+            {
+                await LobbyService.Instance.RemovePlayerAsync(joinedLobbyId, playerId);
+                Debug.Log("RemovePlayerAsync: " + joinedLobbyId);
+            }
         }
     }
 }
