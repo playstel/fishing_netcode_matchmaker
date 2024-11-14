@@ -39,28 +39,38 @@ namespace NetworkServer
         {
             if (Application.platform == RuntimePlatform.LinuxServer)
             {
-                Application.targetFrameRate = 60;
-
-                await UnityServices.InitializeAsync();
-
-                ServerConfig serverConfig = MultiplayService.Instance.ServerConfig;
-
-                _serverQueryHandler = await MultiplayService.Instance
-                    .StartServerQueryHandlerAsync(maxPlayers, serverName, gameType, buildId, map);
-
-                if (serverConfig.AllocationId != string.Empty)
+                try
                 {
-                    var result = NetworkUnityServices.Instance.StartDedicatedServer(serverConfig);
+                    Application.targetFrameRate = 60;
 
-                    if (result)
+                    await UnityServices.InitializeAsync();
+
+                    ServerConfig serverConfig = MultiplayService.Instance.ServerConfig;
+
+                    Debug.Log("--- Starting the server with port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
+                    
+                    _serverQueryHandler = await MultiplayService.Instance
+                        .StartServerQueryHandlerAsync(maxPlayers, serverName, gameType, buildId, map);
+
+                    if (serverConfig.AllocationId != string.Empty)
                     {
-                        Debug.Log("Server has started");
-                        await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                        var result = NetworkUnityServices.Instance.StartDedicatedServer(serverConfig);
+
+                        if (result)
+                        {
+                            Debug.Log("--- Server has started | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
+                            await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                        }
+                        else
+                        {
+                            Debug.LogError("--- Failed to start dedicated server | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
+                        }
                     }
-                    else
-                    {
-                        Debug.LogError("Failed to start the server");
-                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("--- Failed to start linux dedicated server: " + e);
+                    throw;
                 }
             }
         }
@@ -71,6 +81,20 @@ namespace NetworkServer
             {
                 if (_serverQueryHandler != null)
                 {
+                    if (NetworkManager.Singleton == null)
+                    {
+                        Debug.LogError("--- NetworkManager.Singleton is null");
+                        _serverQueryHandler = null;
+                        return;
+                    }
+                    
+                    if (NetworkManager.Singleton.ConnectedClients == null)
+                    {
+                        Debug.LogError("--- NetworkManager.Singleton.ConnectedClients is null");
+                        _serverQueryHandler = null;
+                        return;
+                    }
+                    
                     _serverQueryHandler.CurrentPlayers = (ushort) NetworkManager.Singleton.ConnectedClients.Count;
                     
                     _serverQueryHandler.UpdateServerCheck();

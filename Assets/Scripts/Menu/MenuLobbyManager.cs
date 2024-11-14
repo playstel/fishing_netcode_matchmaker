@@ -14,10 +14,8 @@ using UnityEngine.UI;
 
 namespace Menu
 {
-    public class MenuLobby : MonoBehaviour
+    public class MenuLobbyManager : MonoBehaviour
     {
-        private NetworkLobby _lobby;
-        
         [Header("Buttons")]
         [SerializeField] private Button buttonCreateLobby;
         
@@ -38,15 +36,16 @@ namespace Menu
 
         private void Start()
         {
-            ClearContainer(transformLobbyList);
-            ClearContainer(transformPlayerList);
+            if (Application.platform != RuntimePlatform.LinuxServer)
+            {
+                ClearContainer(transformLobbyList);
+                ClearContainer(transformPlayerList);
+
+                AuthenticationService.Instance.SignedIn += StartShowingLobby;
             
-            _lobby = NetworkLobby.Instance;
-            
-            AuthenticationService.Instance.SignedIn += StartShowingLobby;
-            
-            buttonCreateLobby.onClick.AddListener(CreateLobby);
-            buttonStartGame.onClick.AddListener(StartGameAsHost);
+                buttonCreateLobby.onClick.AddListener(CreateLobby);
+                buttonStartGame.onClick.AddListener(StartGameAsHost);
+            }
         }
 
         private void StartShowingLobby()
@@ -57,7 +56,9 @@ namespace Menu
         private List<Lobby> _lobbies = new();
         private async void ShowLobbyList()
         {
-            _lobbies = await _lobby.GetLobbies();
+            if(Application.platform == RuntimePlatform.LinuxServer) return;
+            
+            _lobbies = await NetworkLobby.Instance.GetLobbies();
 
             if(SceneManager.GetActiveScene().buildIndex > 0) return;
 
@@ -85,7 +86,7 @@ namespace Menu
         {
             Debug.Log("JoinLobby: " + lobby.Id);
             MenuLoading.Instance.PanelLoading(true);
-            var result = await _lobby.JoinLobby(lobby);
+            var result = await NetworkLobby.Instance.JoinLobby(lobby);
             MenuLoading.Instance.PanelLoading(false);
 
             if (result)
@@ -98,7 +99,7 @@ namespace Menu
         private async void CreateLobby()
         {
             MenuLoading.Instance.PanelLoading(true);
-            var result = await _lobby.CreateLobby(inputLobbyName.text, toggleRelay.isOn);
+            var result = await NetworkLobby.Instance.CreateLobby(inputLobbyName.text, toggleRelay.isOn);
             MenuLoading.Instance.PanelLoading(false);
 
             if (result)
@@ -124,7 +125,7 @@ namespace Menu
             
             if(loadingScreen) MenuLoading.Instance.PanelLoading(true);
             
-            var lobby = await _lobby.GetCurrentLobby();
+            var lobby = await NetworkLobby.Instance.GetCurrentLobby();
 
             if (lobby == null)
             {
@@ -140,7 +141,7 @@ namespace Menu
 
             var currentPlayerName = NetworkLobby.Instance.GetCurrentPlayerName();
 
-            var players = _lobby.CreateCurrentLobbyPlayers(lobby);
+            var players = NetworkLobby.Instance.CreateCurrentLobbyPlayers(lobby);
 
             Debug.Log("players: " + lobby.Players.Count);
             

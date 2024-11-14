@@ -15,6 +15,8 @@ namespace Network
     {
         public static NetworkUnityServices Instance;
 
+        public const string InternalServerIp = "0.0.0.0";
+
         public bool signedIn;
         
         private void Awake()
@@ -68,7 +70,7 @@ namespace Network
         
         public bool StartDedicatedServer(ServerConfig serverConfig)
         {
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(serverConfig.IpAddress, serverConfig.Port);
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(InternalServerIp, serverConfig.Port);
 
             return NetworkManager.Singleton.StartServer();
         }

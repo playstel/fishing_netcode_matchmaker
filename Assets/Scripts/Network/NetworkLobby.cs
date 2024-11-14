@@ -246,6 +246,8 @@ namespace Network
         
         private async void OnDestroy()
         {
+            if(Application.platform == RuntimePlatform.LinuxServer) return;
+            
             var playerId = GetCurrentPlayerId();
             
             if (CheckLobbyOwnership())

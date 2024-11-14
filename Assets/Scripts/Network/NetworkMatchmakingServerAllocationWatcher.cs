@@ -28,6 +28,12 @@ namespace Network
         {
             if (Application.platform == RuntimePlatform.LinuxServer)
             {
+                if (_networkManager == null)
+                {
+                    Debug.LogError("--- Failed to find network manager on Update in NetworkMatchmakingServerAllocationWatcher");
+                    return;
+                }
+                
                 if (_networkManager.ConnectedClientsList.Count == 0 && !_isDeallocating)
                 {
                     _isDeallocating = true;
@@ -57,9 +63,17 @@ namespace Network
         {
             if (Application.platform != RuntimePlatform.LinuxServer)
             {
+                if (_networkManager == null)
+                {
+                    Debug.LogError("--- Failed to find network manager OnApplicationQuit in NetworkMatchmakingServerAllocationWatcher");
+                    return;
+                }
+                
                 if (_networkManager.IsConnectedClient)
                 {
+                    Debug.Log("--- Shutdown the server...");
                     _networkManager.Shutdown(true);
+                    Debug.Log("--- Disconnecting the server...");
                     _networkManager.DisconnectClient(OwnerClientId);
                 }
             }
