@@ -37,6 +37,7 @@ namespace Menu
                 return;
             }
             
+            
             if (string.IsNullOrEmpty(port) || string.IsNullOrWhiteSpace(port))
             {
                 NetworkStatusInfo.Instance.SetInfo($"Server Port is null");

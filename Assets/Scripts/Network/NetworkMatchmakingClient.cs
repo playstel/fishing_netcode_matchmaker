@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Menu;
 using Unity.Netcode;
 using Unity.Services.Authentication;
@@ -34,7 +35,7 @@ namespace Network
             else Destroy(gameObject);
         }
 
-        public async Task<bool> CreateMultiplayerTicketAndSession()
+        public async UniTask<bool> CreateMultiplayerTicketAndSession()
         {
             //Dictionary<string, object> hardModeAttribute = new Dictionary<string, object> {{ "GameMode", "Hard" }};
 
@@ -95,7 +96,7 @@ namespace Network
                     }
                 }
 
-                await Task.Delay(1000);
+                await UniTask.Delay(1000);
             }
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using GunFishing.Fish;
 using GunFishing.Score;
 using Network;
@@ -53,7 +54,7 @@ namespace GunFishing.Gun
             if (IsOwner)
             {
                 SetPlayerInfoServerRpc(NetworkManager.Singleton.LocalClientId);
-                await Task.Delay(1000);
+                await UniTask.Delay(1000);
                 _readyToShoot = true;
             }
         }

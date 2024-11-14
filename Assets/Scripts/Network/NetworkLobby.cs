@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Menu;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
@@ -46,7 +47,7 @@ namespace Network
             return playerName + UnityEngine.Random.Range(1,10000);
         }
 
-        public async Task<bool> CreateLobby(string lobbyName, bool relay = true, int maxPlayers = 4, string password = null)
+        public async UniTask<bool> CreateLobby(string lobbyName, bool relay = true, int maxPlayers = 4, string password = null)
         {
             if (string.IsNullOrEmpty(lobbyName))
             {
@@ -107,7 +108,7 @@ namespace Network
             }
         }
 
-        public async Task<bool> JoinLobby(Lobby lobby, string password = null)
+        public async UniTask<bool> JoinLobby(Lobby lobby, string password = null)
         {
             if (_playerData == null)
             {
@@ -154,7 +155,7 @@ namespace Network
             joinedLobbyHostId = lobby.HostId;
         }
 
-        public async Task<List<Lobby>> GetLobbies(string filterByLobbyName = null)
+        public async UniTask<List<Lobby>> GetLobbies(string filterByLobbyName = null)
         {
             var queryResponse = new QueryResponse();
             
@@ -187,7 +188,7 @@ namespace Network
 
                 await LobbyService.Instance.SendHeartbeatPingAsync(lobby.Id);
 
-                await Task.Delay(15 * 1000);
+                await UniTask.Delay(15 * 1000);
             }
         }
         
@@ -231,7 +232,7 @@ namespace Network
             return AuthenticationService.Instance.PlayerName;
         }
 
-        public async Task<Lobby> GetCurrentLobby()
+        public async UniTask<Lobby> GetCurrentLobby()
         {
             var lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobbyId);
             

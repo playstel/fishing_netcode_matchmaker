@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Network;
 using Unity.Netcode;
 using Unity.Services.Multiplay;
@@ -29,7 +30,7 @@ namespace Menu
 
             MenuLoading.Instance.PanelLoading(true);
             
-            await Task.Delay(200);
+            await UniTask.Delay(200);
 
             if (directLoading)
             {
@@ -47,7 +48,7 @@ namespace Menu
                 Debug.Log("Load game scene as a host or server"); NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
             }
             
-            await Task.Delay(200);
+            await UniTask.Delay(200);
             
             MenuLoading.Instance.PanelLoading(false);
             

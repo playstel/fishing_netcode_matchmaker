@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Menu;
 using TMPro;
 using Unity.Netcode;
@@ -28,7 +29,7 @@ namespace Network
             else Destroy(gameObject);
         }
         
-        public async Task<string> CreateRelay(bool loadGameScene = true)
+        public async UniTask<string> CreateRelay(bool loadGameScene = true)
         {
             try
             {
@@ -69,7 +70,7 @@ namespace Network
             }
         }
         
-        public async Task<bool> JoinRelay(string code)
+        public async UniTask<bool> JoinRelay(string code)
         {
             try
             {

@@ -23,6 +23,8 @@ namespace Network
 
         private async void Start()
         {
+            return;
+            
             _networkManager = NetworkManager.Singleton;
             
             if (Application.platform == RuntimePlatform.LinuxServer)
@@ -44,6 +46,8 @@ namespace Network
 
         private async void Update()
         {
+            return;
+            
             if (Application.platform == RuntimePlatform.LinuxServer)
             {
                 if (_backfillTicketId != null && _networkManager.ConnectedClientsList.Count < 4)
@@ -68,6 +72,7 @@ namespace Network
 
         private async void UpdateBackfillTicket()
         {
+            return;
             if (Application.platform == RuntimePlatform.LinuxServer)
             {
                 List<Player> players = new();

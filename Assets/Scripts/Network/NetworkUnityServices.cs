@@ -70,8 +70,10 @@ namespace Network
         
         public bool StartDedicatedServer(ServerConfig serverConfig)
         {
+            Debug.Log("--- StartDedicatedServer | UnityTransport | SetConnectionData: " + InternalServerIp + " " + serverConfig.Port);
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(InternalServerIp, serverConfig.Port);
 
+            Debug.Log("--- StartDedicatedServer | StartServer... ");
             return NetworkManager.Singleton.StartServer();
         }
 
