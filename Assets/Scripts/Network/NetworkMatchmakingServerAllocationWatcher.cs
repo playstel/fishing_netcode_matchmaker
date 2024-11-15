@@ -22,10 +22,7 @@ namespace Network
 
         private void Start()
         {
-            if (NetworkManager.Singleton.IsServer)
-            {
-                _networkManager = NetworkManager.Singleton;
-            }
+            _networkManager = NetworkManager.Singleton;
         }
         
         private void Update()

@@ -57,10 +57,7 @@ namespace Menu
         [ServerRpc(RequireOwnership = false)]
         private void RequestSceneLoadServerRpc()
         {
-            if (IsServer)
-            {
-                NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
-            }
+            NetworkManager.Singleton.SceneManager.LoadScene(_gameSceneName, LoadSceneMode.Single);
         }
     }
 }
