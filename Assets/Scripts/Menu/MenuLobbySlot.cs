@@ -1,8 +1,6 @@
-using System;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Menu
@@ -20,6 +18,7 @@ namespace Menu
             _lobby = lobby;
             textLobbyName.text = lobby.Name;
             textLobbyPlayers.text = $"{lobby.Players.Count}/{lobby.MaxPlayers}";
+            GetComponent<Button>().enabled = lobby.Players.Count < lobby.MaxPlayers;
         }
 
         public Lobby GetLobby()

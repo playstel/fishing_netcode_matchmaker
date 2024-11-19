@@ -4,8 +4,11 @@ using Unity.Netcode;
 using Unity.Services.Core;
 using Unity.Services.Matchmaker;
 using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplay;
 using UnityEngine;
+
+#if SERVER
+using Unity.Services.Multiplay;
+#endif
 
 namespace Network
 {
@@ -18,46 +21,44 @@ namespace Network
 
         private void Awake()
         {
+            #if SERVER
             DontDestroyOnLoad(this);
+            #endif  
         }
 
         private async void Start()
         {
-            return;
+            #if SERVER
             
             _networkManager = NetworkManager.Singleton;
+            _networkManager.OnClientDisconnectCallback += OnClientDisconnected;
+            _networkManager.OnClientConnectedCallback += OnClientConnected;
             
-            if (Application.platform == RuntimePlatform.LinuxServer)
+            while (UnityServices.State == ServicesInitializationState.Uninitialized || 
+                   UnityServices.State == ServicesInitializationState.Initializing)
             {
-                _networkManager.OnClientDisconnectCallback += OnClientDisconnected;
-                _networkManager.OnClientConnectedCallback += OnClientConnected;
-                
-                while (UnityServices.State == ServicesInitializationState.Uninitialized || 
-                       UnityServices.State == ServicesInitializationState.Initializing)
-                {
-                    await Task.Yield();
-                }
-
-                _payloadAllocation = await MultiplayService.Instance.GetPayloadAllocationFromJsonAs<PayloadAllocation>();
-                _backfillTicketId = _payloadAllocation.BackfillTicketId;
+                await Task.Yield();
             }
+
+            _payloadAllocation = await MultiplayService.Instance.GetPayloadAllocationFromJsonAs<PayloadAllocation>();
+            _backfillTicketId = _payloadAllocation.BackfillTicketId;
             
+            #endif
         }
 
         private async void Update()
         {
-            return;
+            #if SERVER
             
-            if (Application.platform == RuntimePlatform.LinuxServer)
+            if (_backfillTicketId != null && _networkManager.ConnectedClientsList.Count < 4)
             {
-                if (_backfillTicketId != null && _networkManager.ConnectedClientsList.Count < 4)
-                {
-                    BackfillTicket backfillTicket = await MatchmakerService.Instance.ApproveBackfillTicketAsync(_backfillTicketId);
-                    _backfillTicketId = backfillTicket.Id;
-                }
-
-                await Task.Delay(1000);
+                BackfillTicket backfillTicket = await MatchmakerService.Instance.ApproveBackfillTicketAsync(_backfillTicketId);
+                _backfillTicketId = backfillTicket.Id;
             }
+
+            await Task.Delay(1000);
+            
+            #endif
         }
         
         private void OnClientDisconnected(ulong clientId)
@@ -72,21 +73,21 @@ namespace Network
 
         private async void UpdateBackfillTicket()
         {
-            return;
-            if (Application.platform == RuntimePlatform.LinuxServer)
+            #if SERVER
+            
+            List<Player> players = new();
+
+            foreach (var playerId in _networkManager.ConnectedClientsIds)
             {
-                List<Player> players = new();
-
-                foreach (var playerId in _networkManager.ConnectedClientsIds)
-                {
-                    players.Add(new Player(playerId.ToString()));
-                }
-
-                var matchProperties = new MatchProperties(null, players, null, _backfillTicketId);
-
-                await MatchmakerService.Instance.UpdateBackfillTicketAsync(_payloadAllocation.BackfillTicketId,
-                    new BackfillTicket(_backfillTicketId, properties: new BackfillTicketProperties(matchProperties)));
+                players.Add(new Player(playerId.ToString()));
             }
+
+            var matchProperties = new MatchProperties(null, players, null, _backfillTicketId);
+
+            await MatchmakerService.Instance.UpdateBackfillTicketAsync(_payloadAllocation.BackfillTicketId,
+                new BackfillTicket(_backfillTicketId, properties: new BackfillTicketProperties(matchProperties)));
+            
+            #endif
         }
 
         [System.Serializable]

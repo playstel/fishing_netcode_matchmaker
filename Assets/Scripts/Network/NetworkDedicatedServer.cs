@@ -1,16 +1,14 @@
 using System;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Menu;
 using Network;
-using TMPro;
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
-using Unity.Services.Authentication;
 using Unity.Services.Core;
-using Unity.Services.Multiplay;
 using UnityEngine;
-using UnityEngine.UI;
+
+#if SERVER
+using Unity.Services.Multiplay;
+#endif
 
 namespace NetworkServer
 {
@@ -24,7 +22,9 @@ namespace NetworkServer
         [SerializeField] private string buildId = "8";
         [SerializeField] private string map = "TestMap";
 
+#if SERVER
         private IServerQueryHandler _serverQueryHandler;
+#endif
 
         private void Awake()
         {
@@ -40,84 +40,86 @@ namespace NetworkServer
 
         private async void Start()
         {
-            if (Application.platform == RuntimePlatform.LinuxServer)
+            #if SERVER
+            
+            try
             {
-                try
-                {
-                    Application.targetFrameRate = 60;
+                Application.targetFrameRate = 60;
 
-                    await UnityServices.InitializeAsync();
+                await UnityServices.InitializeAsync();
                     
-                    Debug.Log("--- UnityServices InitializeAsync finish");
+                Debug.Log("--- UnityServices InitializeAsync finish");
 
-                    _serverQueryHandler = await MultiplayService.Instance
-                        .StartServerQueryHandlerAsync(maxPlayers, serverName, gameType, buildId, map);
+                _serverQueryHandler = await MultiplayService.Instance
+                    .StartServerQueryHandlerAsync(maxPlayers, serverName, gameType, buildId, map);
 
-                    Debug.Log("--- _serverQueryHandler | ServerName: " + _serverQueryHandler.ServerName);
+                Debug.Log("--- _serverQueryHandler | ServerName: " + _serverQueryHandler.ServerName);
                     
-                    ServerConfig serverConfig = MultiplayService.Instance.ServerConfig;
+                ServerConfig serverConfig = MultiplayService.Instance.ServerConfig;
 
-                    Debug.Log("--- Starting the server with port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
+                Debug.Log("--- Starting the server with port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
 
-                    await UniTask.WaitUntil(() => serverConfig.AllocationId != string.Empty);
+                await UniTask.WaitUntil(() => serverConfig.AllocationId != string.Empty);
                     
-                    Debug.Log("--- serverConfig.AllocationId " + serverConfig.AllocationId);
+                Debug.Log("--- serverConfig.AllocationId " + serverConfig.AllocationId);
                         
-                    var result = NetworkUnityServices.Instance.StartDedicatedServer(serverConfig);
+                var result = NetworkUnityServices.Instance.StartDedicatedServer(serverConfig.Port);
 
-                    if (result)
-                    {
-                        Debug.Log("--- Server has started | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
-                        await MultiplayService.Instance.ReadyServerForPlayersAsync();
-                        _serverHasStarted = true;
-                    }
-                    else
-                    {
-                        Debug.LogError("--- Failed to start dedicated server | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
-                    }
-                }
-                catch (Exception e)
+                if (result)
                 {
-                    Debug.LogError("--- Failed to start linux dedicated server: " + e);
-                    throw;
+                    Debug.Log("--- Server has started | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
+                    await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                    _serverHasStarted = true;
+                }
+                else
+                {
+                    Debug.LogError("--- Failed to start dedicated server | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
                 }
             }
+            catch (Exception e)
+            {
+                Debug.LogError("--- Failed to start linux dedicated server: " + e);
+                throw;
+            }
+            
+            #endif
         }
 
         private async void Update()
         {
-            if (Application.platform == RuntimePlatform.LinuxServer)
+            #if SERVER
+            
+            if (_serverHasStarted && _serverQueryHandler != null)
             {
-                if (_serverHasStarted && _serverQueryHandler != null)
+                if (NetworkManager.Singleton == null)
                 {
-                    if (NetworkManager.Singleton == null)
-                    {
-                        Debug.LogError("--- NetworkManager.Singleton is null");
-                        _serverQueryHandler = null;
-                        return;
-                    }
-
-                    if (!NetworkManager.Singleton.IsServer)
-                    {
-                        Debug.LogError("--- NetworkManager Update: is not a Server");
-                        _serverQueryHandler = null;
-                        return;
-                    }
-                    
-                    if (NetworkManager.Singleton.ConnectedClients == null)
-                    {
-                        Debug.LogError("--- NetworkManager.Singleton.ConnectedClients is null");
-                        _serverQueryHandler = null;
-                        return;
-                    }
-
-                    _serverQueryHandler.CurrentPlayers = (ushort) NetworkManager.Singleton.ConnectedClients.Count;
-                    
-                    _serverQueryHandler.UpdateServerCheck();
-
-                    await UniTask.Delay(200);
+                    Debug.LogError("--- NetworkManager.Singleton is null");
+                    _serverQueryHandler = null;
+                    return;
                 }
+
+                if (!NetworkManager.Singleton.IsServer)
+                {
+                    Debug.LogError("--- NetworkManager Update: is not a Server");
+                    _serverQueryHandler = null;
+                    return;
+                }
+                    
+                if (NetworkManager.Singleton.ConnectedClients == null)
+                {
+                    Debug.LogError("--- NetworkManager.Singleton.ConnectedClients is null");
+                    _serverQueryHandler = null;
+                    return;
+                }
+
+                _serverQueryHandler.CurrentPlayers = (ushort) NetworkManager.Singleton.ConnectedClients.Count;
+                    
+                _serverQueryHandler.UpdateServerCheck();
+
+                await UniTask.Delay(200);
             }
+            
+            #endif
         }
 
         public bool JoinToServer(string ipAddress, string port)

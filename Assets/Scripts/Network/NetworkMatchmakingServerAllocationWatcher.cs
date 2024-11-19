@@ -4,7 +4,6 @@ using Unity.Netcode;
 using Unity.Services.Core;
 using Unity.Services.Matchmaker;
 using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplay;
 using UnityEngine;
 
 namespace Network
@@ -27,32 +26,28 @@ namespace Network
         
         private void Update()
         {
-            return;
+            #if SERVER
             
-            if (Application.platform == RuntimePlatform.LinuxServer)
+            if (NetworkManager.Singleton == null)
             {
-                if (NetworkManager.Singleton.IsServer)
-                {
-                    if (NetworkManager.Singleton == null)
-                    {
-                        Debug.LogError("--- Failed to find network manager on Update in NetworkMatchmakingServerAllocationWatcher");
-                        return;
-                    }
-                
-                    if (NetworkManager.Singleton.ConnectedClientsList.Count == 0 && !_isDeallocating)
-                    {
-                        _isDeallocating = true;
-                        _deallocationCancellationToken = false;
-                        Deallocate();
-                    }
-                
-                    if (NetworkManager.Singleton.ConnectedClientsList.Count != 0)
-                    {
-                        _isDeallocating = false;
-                        _deallocationCancellationToken = true;
-                    }
-                }
+                Debug.LogError("--- Failed to find network manager on Update in NetworkMatchmakingServerAllocationWatcher");
+                return;
             }
+            
+            if (NetworkManager.Singleton.ConnectedClientsList.Count == 0 && !_isDeallocating)
+            {
+                _isDeallocating = true;
+                _deallocationCancellationToken = false;
+                Deallocate();
+            }
+            
+            if (NetworkManager.Singleton.ConnectedClientsList.Count != 0)
+            {
+                _isDeallocating = false;
+                _deallocationCancellationToken = true;
+            }
+            
+            #endif
         }
 
         private async void Deallocate()
@@ -67,23 +62,25 @@ namespace Network
 
         private void OnApplicationQuit()
         {
-            if (Application.platform != RuntimePlatform.LinuxServer)
+            if (_networkManager == null)
             {
-                if (_networkManager == null)
-                {
-                    Debug.LogError("--- Failed to find network manager OnApplicationQuit in NetworkMatchmakingServerAllocationWatcher");
-                    return;
-                }
+                Debug.LogError("--- Failed to find network manager OnApplicationQuit in NetworkMatchmakingServerAllocationWatcher");
+                return;
+            }
+
+            #if SERVER
+            
+            Debug.Log("--- Shutdown the server...");
+            _networkManager.Shutdown(true);
+            
+            #endif
                 
-                if (_networkManager.IsConnectedClient)
+            if (_networkManager.IsConnectedClient)
+            {
+                if (NetworkManager.Singleton.IsServer)
                 {
-                    if (NetworkManager.Singleton.IsServer)
-                    {
-                        Debug.Log("--- Shutdown the server...");
-                        _networkManager.Shutdown(true);
-                        Debug.Log("--- Disconnecting the server...");
-                        _networkManager.DisconnectClient(OwnerClientId);
-                    }
+                    Debug.Log("--- Disconnecting the server...");
+                    _networkManager.DisconnectClient(OwnerClientId);
                 }
             }
         }

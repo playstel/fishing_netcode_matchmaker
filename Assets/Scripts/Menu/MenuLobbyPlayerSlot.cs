@@ -13,18 +13,10 @@ namespace Menu
         [SerializeField] private TMP_Text textLobbyPlayerName;
         [SerializeField] private TMP_Text textLobbyPlayerStatus;
 
-        public void SetInfo(LobbyPlayer lobbyPlayer, string currentPlayerName)
+        public void SetInfo(LobbyPlayer lobbyPlayer)
         {
             textLobbyPlayerName.text = lobbyPlayer.playerName;
-
-            if (currentPlayerName == lobbyPlayer.playerName)
-            {
-                textLobbyPlayerStatus.text = lobbyPlayer.playerStatus;
-            }
-            else
-            {
-                textLobbyPlayerStatus.text = $"{lobbyPlayer.playerStatus} (You)";
-            }
+            textLobbyPlayerStatus.text = lobbyPlayer.playerStatus;
         }
     }
 }

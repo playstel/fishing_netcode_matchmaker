@@ -253,13 +253,13 @@ namespace Network
             
             if (CheckLobbyOwnership())
             {
-                await LobbyService.Instance.DeleteLobbyAsync(joinedLobbyId);
                 Debug.Log("DeleteLobbyAsync: " + joinedLobbyId);
+                LobbyService.Instance.DeleteLobbyAsync(joinedLobbyId);
             }
             else
             {
-                await LobbyService.Instance.RemovePlayerAsync(joinedLobbyId, playerId);
                 Debug.Log("RemovePlayerAsync: " + joinedLobbyId);
+                LobbyService.Instance.RemovePlayerAsync(joinedLobbyId, playerId);
             }
         }
     }

@@ -4,7 +4,6 @@ using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -31,19 +30,39 @@ namespace Network
         
         private async void Start()
         {
-            if (Application.platform != RuntimePlatform.LinuxServer)
+            #if !SERVER
+            
+            await UnityServices.InitializeAsync();
+            
+            if (!AuthenticationService.Instance.IsSignedIn)
             {
-                await UnityServices.InitializeAsync();
-
                 AuthenticationService.Instance.SignedIn += () =>
                 {
                     Debug.Log("Signed in: " + AuthenticationService.Instance.PlayerId);
+
+                    signedIn = true;
                 };
+
+                var profileName = GenerateValidProfileName();
+                Debug.Log("SwitchProfile | profileName: " + profileName);
+                AuthenticationService.Instance.SwitchProfile(profileName);
 
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
 
                 NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             }
+            else
+            {
+                Debug.LogError("AuthenticationService is signed already");
+            }
+
+#endif
+        }
+        
+        private string GenerateValidProfileName()
+        {
+            // Укорачиваем GUID до 8 символов, чтобы гарантировать уникальность и соответствие требованиям
+            return System.Guid.NewGuid().ToString("N").Substring(0, 8);
         }
         
         private void OnClientConnected(ulong clientId)
@@ -68,10 +87,10 @@ namespace Network
             return NetworkManager.Singleton.StartClient();
         }
         
-        public bool StartDedicatedServer(ServerConfig serverConfig)
+        public bool StartDedicatedServer(ushort port)
         {
-            Debug.Log("--- StartDedicatedServer | UnityTransport | SetConnectionData: " + InternalServerIp + " " + serverConfig.Port);
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(InternalServerIp, serverConfig.Port);
+            Debug.Log("--- StartDedicatedServer | UnityTransport | SetConnectionData: " + InternalServerIp + " " + port);
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(InternalServerIp, port);
 
             Debug.Log("--- StartDedicatedServer | StartServer... ");
             return NetworkManager.Singleton.StartServer();

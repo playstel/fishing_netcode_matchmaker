@@ -7,6 +7,7 @@ using Network;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GunFishing.Gun
 {
@@ -34,8 +35,10 @@ namespace GunFishing.Gun
         
         private NetworkVariable<Vector2> _networkPosition = new NetworkVariable<Vector2>();
         
-        public override void OnNetworkSpawn()
+        public override async void OnNetworkSpawn()
         {
+            await UniTask.WaitUntil(() => SceneManager.GetActiveScene().buildIndex > 0);
+            
             _transform = transform;
 
             if (IsOwner)
@@ -51,6 +54,8 @@ namespace GunFishing.Gun
 
         private async void Start()
         {
+            await UniTask.WaitUntil(() => SceneManager.GetActiveScene().buildIndex > 0);
+            
             if (IsOwner)
             {
                 SetPlayerInfoServerRpc(NetworkManager.Singleton.LocalClientId);
@@ -69,6 +74,8 @@ namespace GunFishing.Gun
         
         private void Update()
         {
+            if (!_readyToShoot) return;
+            
             if (IsOwner)
             {
                 GunShoot();
@@ -82,8 +89,6 @@ namespace GunFishing.Gun
 
         private void GunShoot()
         {
-            if (!_readyToShoot) return;
-            
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 _isAutomaticMode = !_isAutomaticMode;

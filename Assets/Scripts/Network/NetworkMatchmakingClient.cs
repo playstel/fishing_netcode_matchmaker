@@ -7,7 +7,6 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Matchmaker;
 using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplay;
 using UnityEngine;
 
 namespace Network
@@ -38,6 +37,8 @@ namespace Network
         public async UniTask<bool> CreateMultiplayerTicketAndSession()
         {
             //Dictionary<string, object> hardModeAttribute = new Dictionary<string, object> {{ "GameMode", "Hard" }};
+
+            await UniTask.WaitUntil(() => AuthenticationService.Instance != null);
 
             var ticketOption = new CreateTicketOptions(matchmakerQueueName);
             var playerId = AuthenticationService.Instance.PlayerId;

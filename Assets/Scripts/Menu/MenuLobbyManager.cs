@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Network;
 using TMPro;
 using Unity.Services.Authentication;
@@ -36,27 +37,27 @@ namespace Menu
 
         private void Start()
         {
-            if (Application.platform != RuntimePlatform.LinuxServer)
-            {
-                ClearContainer(transformLobbyList);
-                ClearContainer(transformPlayerList);
-
-                AuthenticationService.Instance.SignedIn += StartShowingLobby;
-            
-                buttonCreateLobby.onClick.AddListener(CreateLobby);
-                buttonStartGame.onClick.AddListener(StartGameAsHost);
-            }
+            buttonCreateLobby.onClick.AddListener(CreateLobby);
+            buttonStartGame.onClick.AddListener(StartGameAsHost);
+            ClearContainer(transformLobbyList);
+            ClearContainer(transformPlayerList);
+            StartShowingLobby();
         }
 
-        private void StartShowingLobby()
+        private async void StartShowingLobby()
         {
-            InvokeRepeating(nameof(ShowLobbyList), 1, 5);
+            #if !SERVER
+            Debug.Log("--- StartShowingLobby");
+            await UniTask.WaitUntil(() => NetworkUnityServices.Instance.signedIn);
+            Debug.Log("--- StartShowingLobby - signedIn");
+            InvokeRepeating(nameof(ShowLobbyList), 2, 5);
+            #endif
         }
         
         private List<Lobby> _lobbies = new();
         private async void ShowLobbyList()
         {
-            if(Application.platform == RuntimePlatform.LinuxServer) return;
+            Debug.Log("--- ShowLobbyList");
             
             _lobbies = await NetworkLobby.Instance.GetLobbies();
 
@@ -111,7 +112,7 @@ namespace Menu
 
         private void StartShowingLobbyDetails()
         {
-            InvokeRepeating(nameof(OpenLobbyDetailsWithoutLoadingScreen), 3, 5);
+            InvokeRepeating(nameof(OpenLobbyDetailsWithoutLoadingScreen), 1, 5);
         }
 
         private void OpenLobbyDetailsWithoutLoadingScreen()
@@ -139,8 +140,6 @@ namespace Menu
 
             ClearContainer(transformPlayerList);
 
-            var currentPlayerName = NetworkLobby.Instance.GetCurrentPlayerName();
-
             var players = NetworkLobby.Instance.CreateCurrentLobbyPlayers(lobby);
 
             Debug.Log("players: " + lobby.Players.Count);
@@ -151,7 +150,7 @@ namespace Menu
                 
                 if (slotInstance.TryGetComponent(out MenuLobbyPlayerSlot slot))
                 {
-                    slot.SetInfo(player, currentPlayerName);
+                    slot.SetInfo(player);
                 }
             }
             
