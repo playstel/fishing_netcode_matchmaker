@@ -3,6 +3,10 @@
 This small project describes working with a Unity Netcode.
 WebGl temporary server link: https://builds.lazy.soccer:2053/netcode_test/
 
+Lobby as a guest, 4 players maximum per lobby:
+
+![image](https://github.com/user-attachments/assets/b8286d22-f187-477e-a737-915b80da209e)
+
 game process:
 
 ![image](https://github.com/user-attachments/assets/600ad8a3-6953-4053-897f-4e065ec8be94)
@@ -75,7 +79,4 @@ Joining lobby:
 
 ![image](https://github.com/user-attachments/assets/e3da7bec-d51b-41fa-b84e-e71481e636ad)
 
-Lobby as a guest, 4 players maximum per lobby:
-
-![image](https://github.com/user-attachments/assets/b8286d22-f187-477e-a737-915b80da209e)
 
