@@ -52,6 +52,9 @@ Linux build + configs:
 
 ![image](https://github.com/user-attachments/assets/f983a0bc-c61b-44c4-9ca2-1fe8f37b999f)
 ![image](https://github.com/user-attachments/assets/e5a59335-d1ca-4e79-a377-5a5a3a4d2b42)
+<img width="1216" alt="image" src="https://github.com/user-attachments/assets/eea85001-e3cd-46d0-afc3-d7907954a025">
+<img width="1216" alt="image" src="https://github.com/user-attachments/assets/b274b365-452a-45c3-b7f6-b45e1cdc5098">
+
 
 Lobby dashboard:
 
