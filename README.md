@@ -3,10 +3,6 @@
 This small project describes working with a Unity Netcode.
 WebGl temporary server link: https://builds.lazy.soccer:2053/netcode_test/
 
-Lobby as a guest, 4 players maximum per lobby:
-
-![image](https://github.com/user-attachments/assets/b8286d22-f187-477e-a737-915b80da209e)
-
 game process:
 
 ![image](https://github.com/user-attachments/assets/600ad8a3-6953-4053-897f-4e065ec8be94)
@@ -15,6 +11,10 @@ Max shooting rate is 12 bullets per second; manual and auto-fire modes (press "S
 Multiple fish types with random movement (Rust, Purple, Gold). Each type has its speed, volatility, scale, and image, and can have one of 3 rarities (Common, Rare, Legendary), lower volatility fish gives fewer points and is easier to hit.
 All bullets move at the same speed and are destroyed upon hitting a fish only; bullets have a ricochet, so they remain on the map until they hit a fish (previous rule).
 Recording and displaying the outcome of the last 12 shots for the local player and the total score. For other players, display only the total score.
+
+Lobby as a guest, 4 players maximum per lobby:
+
+![image](https://github.com/user-attachments/assets/b8286d22-f187-477e-a737-915b80da209e)
 
 bullets and fish have Network Transform.
 
