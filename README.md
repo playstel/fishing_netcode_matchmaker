@@ -122,6 +122,8 @@ Catching fish through ServerRPC and ClientRPC with Reliable Delivery and without
 
 All network scripts are separated from UI logic. The lobby code with Relay or Dedicated server can be found in the start scene.
 
+You can find the Dedicated Server build in the "DedicatedServer_Linux" folder. 
+
 Dedicated Server (Multiplay Hosting):
 
 ![image](https://github.com/user-attachments/assets/09a3d4ee-194d-4085-b790-50dc956c0ce5)
