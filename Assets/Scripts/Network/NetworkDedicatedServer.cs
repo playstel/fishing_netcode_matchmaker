@@ -48,21 +48,13 @@ namespace NetworkServer
 
                 await UnityServices.InitializeAsync();
                     
-                Debug.Log("--- UnityServices InitializeAsync finish");
-
                 _serverQueryHandler = await MultiplayService.Instance
                     .StartServerQueryHandlerAsync(maxPlayers, serverName, gameType, buildId, map);
 
-                Debug.Log("--- _serverQueryHandler | ServerName: " + _serverQueryHandler.ServerName);
-                    
                 ServerConfig serverConfig = MultiplayService.Instance.ServerConfig;
-
-                Debug.Log("--- Starting the server with port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
-
+                
                 await UniTask.WaitUntil(() => serverConfig.AllocationId != string.Empty);
-                    
-                Debug.Log("--- serverConfig.AllocationId " + serverConfig.AllocationId);
-                        
+
                 var result = NetworkUnityServices.Instance.StartDedicatedServer(serverConfig.Port);
 
                 if (result)
