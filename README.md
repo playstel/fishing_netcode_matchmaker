@@ -170,7 +170,47 @@ Dedicated Server (Multiplay Hosting):
 
 Unity Cloud Relay:
 
-![image](https://github.com/user-attachments/assets/07724f41-de61-409a-9e2e-3df765d03d4f)
+public async UniTask<string> CreateRelay(bool loadGameScene = true)
+        {
+            try
+            {
+                NetworkStatusInfo.Instance.SetInfo("Creating Relay");
+                
+                var allocation = await Unity.Services.Relay.Relay.Instance.CreateAllocationAsync(3);
+            
+                var relayJoinCode = await Unity.Services.Relay.Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+                var relayServerData = new RelayServerData(allocation, _transportProtocol);
+
+                var result = NetworkUnityServices.Instance.StartRelayHost(relayServerData);
+            
+                NetworkStatusInfo.Instance.SetJoinCode(relayJoinCode);
+                
+                if (result)
+                {
+                    NetworkStatusInfo.Instance.SetInfo($"You are the host");
+                    
+                    if (loadGameScene)
+                    {
+                        NetworkSceneLoader.Instance.LoadGameScene();
+                    }
+                }
+                else
+                {
+                    NetworkStatusInfo.Instance.SetInfo($"Failed to create a host");
+                    return null;
+                }
+
+                return relayJoinCode;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Relay error: {e.Message}");
+                NetworkStatusInfo.Instance.SetInfo($"Relay error: {e.Message}");
+                return null;
+            }
+        }
+        
 ![image](https://github.com/user-attachments/assets/156db46c-31aa-4183-ae77-f146b5011a0b)
 
 
