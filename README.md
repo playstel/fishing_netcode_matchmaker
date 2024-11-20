@@ -25,17 +25,98 @@ Bullets and fish have Network Transform.
 
 Shooting through ServerRPC
 
-![image](https://github.com/user-attachments/assets/91622d36-1935-490d-a71a-970d205c714b)
-
+        [ServerRpc]
+        private void ShootServerRpc(ulong owner)
+        {
+            var bulletInstance = NetworkManager.Singleton.SpawnManager
+                .InstantiateAndSpawn(bulletObject, ownerClientId: owner, position: _transform.position + Vector3.up, rotation: bulletPrefab.transform.rotation);
+            
+            bulletInstance.TryGetComponent(out GunBullet bullet);
+            {
+                bullet.SetHost(this);
+                SuccessRateCheck();
+            }
+        }
+        
 
 Updating player position through ServerRPC with Unreliable Delivery + NetworkVariable<Vector2>:
 
-![image](https://github.com/user-attachments/assets/fa4a7133-14e1-4f28-9986-c70d6cd52496)
+
+        private void UpdatePosition(Vector2 worldPosition)
+        {
+            var newPosition = new Vector2(worldPosition.x, PosY);
+            _transform.position = newPosition;
+            UpdatePositionServerRpc(newPosition);
+        }
+        
+        [ServerRpc(Delivery = RpcDelivery.Unreliable)]
+        private void UpdatePositionServerRpc(Vector2 newPosition)
+        {
+            if ((_networkPosition.Value - newPosition).sqrMagnitude > 0.01f)
+            {
+                _networkPosition.Value = newPosition;
+            }
+        }
+        
+        [ServerRpc]
+        private void SetPlayerInfoServerRpc(ulong playerId)
+        {
+            if (RoomPlayersManager.Instance == null)
+            {
+                Debug.LogError("Failed to find RoomPlayersManager.Instance");
+                return;
+            }
+            
+            RoomPlayersManager.Instance.AddPlayer(playerId, this);
+        }
+
 
 
 Catching fish through ServerRPC and ClientRPC with Reliable Delivery and without Ownership requirements:
 
-![image](https://github.com/user-attachments/assets/3cdcec18-ed85-458f-b3a5-ad222d6e8ff8)
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other == null)
+            {
+                Debug.LogError("Failed to find trigger collider");
+                return;
+            }
+            
+            if (!other.CompareTag("Bullet")) return;
+
+            if (other.TryGetComponent(out GunFishing.Gun.GunBullet bullet))
+            {
+                CatchFishServerRpc(bullet.OwnerClientId);
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void CatchFishServerRpc(ulong playerId)
+        {
+            if (isCaught.Value) return;
+            
+            isCaught.Value = true;
+            
+            UpdateClientRpc(playerId);
+            
+            RoomInfoUi.Instance.AddTotalScore(points.Value);
+
+            NetworkObject.Destroy(gameObject);
+        }
+
+        [ClientRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
+        private void UpdateClientRpc(ulong playerId)
+        {
+            Debug.Log($"Fish caught by player {playerId}");
+
+            RoomInfoUi.Instance.RegisterShot(points.Value, $"{volatility.Value} {fishType} fish", playerId);
+            
+            if (playerId == NetworkManager.Singleton.LocalClientId)
+            {
+                RoomPlayersManager.Instance.RegisterHit(playerId);
+            }
+        }
 
 ---
 
@@ -43,6 +124,45 @@ All network scripts are separated from UI logic. The lobby code with Relay or De
 
 Dedicated Server (Multiplay Hosting):
 
+private async void Start()
+        {
+            #if SERVER
+            
+            try
+            {
+                Application.targetFrameRate = 60;
+
+                await UnityServices.InitializeAsync();
+                    
+                _serverQueryHandler = await MultiplayService.Instance
+                    .StartServerQueryHandlerAsync(maxPlayers, serverName, gameType, buildId, map);
+
+                ServerConfig serverConfig = MultiplayService.Instance.ServerConfig;
+                
+                await UniTask.WaitUntil(() => serverConfig.AllocationId != string.Empty);
+
+                var result = NetworkUnityServices.Instance.StartDedicatedServer(serverConfig.Port);
+
+                if (result)
+                {
+                    Debug.Log("--- Server has started | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
+                    await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                    _serverHasStarted = true;
+                }
+                else
+                {
+                    Debug.LogError("--- Failed to start dedicated server | Port: " + serverConfig.Port + " | Ip: " + serverConfig.IpAddress);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("--- Failed to start linux dedicated server: " + e);
+                throw;
+            }
+            
+            #endif
+        }
+        
 ![image](https://github.com/user-attachments/assets/09a3d4ee-194d-4085-b790-50dc956c0ce5)
 ![image](https://github.com/user-attachments/assets/07edde31-860e-441e-9aaa-09fa81161dba)
 ![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
