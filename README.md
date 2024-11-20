@@ -230,21 +230,11 @@ Matchmaker dashboard:
 
 ![image](https://github.com/user-attachments/assets/2a57cd93-70de-4df9-b6cd-233b6888e0e6)
 
+---
 
---
+You can learn more by downloading and running the project in Unity (2022.3.31f1). 
 
+# Other
 
-Creating lobby (Lobby name required):
-
-![image](https://github.com/user-attachments/assets/f3078958-a3de-4e55-bf92-25e15209361d)
-
-
-Lobby as host:
-
-![image](https://github.com/user-attachments/assets/f002655e-f57b-4e66-bc96-b0f08f0e8571)
-
-Joining lobby:
-
-![image](https://github.com/user-attachments/assets/e3da7bec-d51b-41fa-b84e-e71481e636ad)
-
+More projects https://playstel.com/
 
