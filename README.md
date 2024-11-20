@@ -7,6 +7,7 @@ Game process:
 
 ![image](https://github.com/user-attachments/assets/600ad8a3-6953-4053-897f-4e065ec8be94)
 
+
 Max shooting rate is 12 bullets per second; manual and auto-fire modes (press "Space" to switch modes).
 Multiple fish types with random movement (Rust, Purple, Gold). Each type has its speed, volatility, scale, and image, and can have one of 3 rarities (Common, Rare, Legendary), lower volatility fish gives fewer points and is easier to hit.
 All bullets move at the same speed and are destroyed upon hitting a fish only; bullets have a ricochet, so they remain on the map until they hit a fish (previous rule).
@@ -16,17 +17,21 @@ Lobby as a guest, 4 players maximum per lobby:
 
 ![image](https://github.com/user-attachments/assets/b8286d22-f187-477e-a737-915b80da209e)
 
+
 Bullets and fish have Network Transform.
 
 ![image](https://github.com/user-attachments/assets/36015edc-f51e-4ef6-950c-8b804b35d062)
+
 
 Shooting through ServerRPC
 
 ![image](https://github.com/user-attachments/assets/91622d36-1935-490d-a71a-970d205c714b)
 
+
 Updating player position through ServerRPC with Unreliable Delivery + NetworkVariable<Vector2>:
 
 ![image](https://github.com/user-attachments/assets/fa4a7133-14e1-4f28-9986-c70d6cd52496)
+
 
 Catching fish through ServerRPC and ClientRPC with Reliable Delivery and without Ownership requirements:
 
@@ -43,19 +48,22 @@ Dedicated Server (Multiplay Hosting):
 ![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
 ![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
 
+
 Unity Cloud Relay:
 
-![image](https://github.com/user-attachments/assets/9a87edca-f9b1-401b-9519-21c897453e01)
 ![image](https://github.com/user-attachments/assets/07724f41-de61-409a-9e2e-3df765d03d4f)
 ![image](https://github.com/user-attachments/assets/156db46c-31aa-4183-ae77-f146b5011a0b)
+
 
 You can enable additional connection variants like direct Relay or Dedicated server connections in the Unity Editor:
 
 ![image](https://github.com/user-attachments/assets/ef6bf5c7-043e-46ed-8c67-d469632606a1)
 
+
 Lobby dashboard:
 
 ![image](https://github.com/user-attachments/assets/a3d55fa1-42c1-4b9f-adf7-05d4769b054b)
+
 
 Matchmaker dashboard:
 
@@ -64,9 +72,11 @@ Matchmaker dashboard:
 
 --
 
+
 Creating lobby (Lobby name required):
 
 ![image](https://github.com/user-attachments/assets/f3078958-a3de-4e55-bf92-25e15209361d)
+
 
 Lobby as host:
 
