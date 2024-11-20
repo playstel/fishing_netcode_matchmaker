@@ -26,6 +26,7 @@ namespace Network
         
         private void Update()
         {
+            return;
             #if SERVER
             
             if (NetworkManager.Singleton == null)

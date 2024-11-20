@@ -28,6 +28,7 @@ namespace Network
 
         private async void Start()
         {
+            return;
             #if SERVER
             
             _networkManager = NetworkManager.Singleton;
@@ -48,6 +49,7 @@ namespace Network
 
         private async void Update()
         {
+            return;
             #if SERVER
             
             if (_backfillTicketId != null && _networkManager.ConnectedClientsList.Count < 4)
@@ -73,6 +75,7 @@ namespace Network
 
         private async void UpdateBackfillTicket()
         {
+            return;
             #if SERVER
             
             List<Player> players = new();

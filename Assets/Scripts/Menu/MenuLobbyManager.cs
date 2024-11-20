@@ -46,6 +46,8 @@ namespace Menu
 
         private async void StartShowingLobby()
         {
+            if(Application.platform == RuntimePlatform.LinuxServer) return;
+            
             #if !SERVER
             Debug.Log("--- StartShowingLobby");
             await UniTask.WaitUntil(() => NetworkUnityServices.Instance.signedIn);
@@ -59,10 +61,10 @@ namespace Menu
         {
             Debug.Log("--- ShowLobbyList");
             
-            _lobbies = await NetworkLobby.Instance.GetLobbies();
-
             if(SceneManager.GetActiveScene().buildIndex > 0) return;
-
+            
+            _lobbies = await NetworkLobby.Instance.GetLobbies();
+            
             ClearContainer(transformLobbyList);
 
             for (var i = 0; i < _lobbies.Count; i++)
