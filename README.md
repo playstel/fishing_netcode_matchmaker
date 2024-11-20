@@ -38,7 +38,11 @@ all network scripts are separated from UI logic. In the start scene you can find
 
 ![image](https://github.com/user-attachments/assets/9a87edca-f9b1-401b-9519-21c897453e01)
 ![image](https://github.com/user-attachments/assets/07724f41-de61-409a-9e2e-3df765d03d4f)
-![image](https://github.com/user-attachments/assets/1feecf7b-148d-4431-b208-0a016e90e924)
+
+Dedicated Server (Multiplay Hosting):
+![image](https://github.com/user-attachments/assets/07edde31-860e-441e-9aaa-09fa81161dba)
+![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
+![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
 
 you can enable additional connection variants like direct Relay or Dedicated server connections in the Unity Editor:
 
@@ -52,15 +56,12 @@ Linux build + configs:
 
 ![image](https://github.com/user-attachments/assets/f983a0bc-c61b-44c4-9ca2-1fe8f37b999f)
 ![image](https://github.com/user-attachments/assets/e5a59335-d1ca-4e79-a377-5a5a3a4d2b42)
-<img width="1216" alt="image" src="https://github.com/user-attachments/assets/eea85001-e3cd-46d0-afc3-d7907954a025">
-<img width="1216" alt="image" src="https://github.com/user-attachments/assets/b274b365-452a-45c3-b7f6-b45e1cdc5098">
 
 Multiplay Hosting server:
 ![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
 ![image](https://github.com/user-attachments/assets/f0a11d94-7036-4cb1-bc94-992aefbe8d92)
 ![image](https://github.com/user-attachments/assets/d2d433ab-a75e-46f8-a36f-3e68468143c5)
 ![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
-
 
 Lobby dashboard:
 
