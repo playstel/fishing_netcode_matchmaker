@@ -55,6 +55,12 @@ Linux build + configs:
 <img width="1216" alt="image" src="https://github.com/user-attachments/assets/eea85001-e3cd-46d0-afc3-d7907954a025">
 <img width="1216" alt="image" src="https://github.com/user-attachments/assets/b274b365-452a-45c3-b7f6-b45e1cdc5098">
 
+Multiplay Hosting server:
+![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
+![image](https://github.com/user-attachments/assets/f0a11d94-7036-4cb1-bc94-992aefbe8d92)
+![image](https://github.com/user-attachments/assets/d2d433ab-a75e-46f8-a36f-3e68468143c5)
+![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
+
 
 Lobby dashboard:
 
