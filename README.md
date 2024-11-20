@@ -3,7 +3,7 @@
 This small project describes working with a Unity Netcode.
 WebGl temporary server link: https://builds.lazy.soccer:2053/netcode_test/
 
-game process:
+Game process:
 
 ![image](https://github.com/user-attachments/assets/600ad8a3-6953-4053-897f-4e065ec8be94)
 
@@ -16,52 +16,42 @@ Lobby as a guest, 4 players maximum per lobby:
 
 ![image](https://github.com/user-attachments/assets/b8286d22-f187-477e-a737-915b80da209e)
 
-bullets and fish have Network Transform.
+Bullets and fish have Network Transform.
 
 ![image](https://github.com/user-attachments/assets/36015edc-f51e-4ef6-950c-8b804b35d062)
 
-shooting through ServerRPC
+Shooting through ServerRPC
 
 ![image](https://github.com/user-attachments/assets/91622d36-1935-490d-a71a-970d205c714b)
 
-updating player position through ServerRPC with Unreliable Delivery + NetworkVariable<Vector2>:
+Updating player position through ServerRPC with Unreliable Delivery + NetworkVariable<Vector2>:
 
 ![image](https://github.com/user-attachments/assets/fa4a7133-14e1-4f28-9986-c70d6cd52496)
 
-catching fish through ServerRPC and ClientRPC with Reliable Delivery and without Ownership requirements:
+Catching fish through ServerRPC and ClientRPC with Reliable Delivery and without Ownership requirements:
 
 ![image](https://github.com/user-attachments/assets/3cdcec18-ed85-458f-b3a5-ad222d6e8ff8)
 
 ---
 
-all network scripts are separated from UI logic. In the start scene you can find the Lobby code with Relay (default) or Dedicated server:
-
-![image](https://github.com/user-attachments/assets/9a87edca-f9b1-401b-9519-21c897453e01)
-![image](https://github.com/user-attachments/assets/07724f41-de61-409a-9e2e-3df765d03d4f)
+All network scripts are separated from UI logic. The lobby code with Relay or Dedicated server can be found in the start scene.
 
 Dedicated Server (Multiplay Hosting):
+
+![image](https://github.com/user-attachments/assets/09a3d4ee-194d-4085-b790-50dc956c0ce5)
 ![image](https://github.com/user-attachments/assets/07edde31-860e-441e-9aaa-09fa81161dba)
 ![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
 ![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
 
-you can enable additional connection variants like direct Relay or Dedicated server connections in the Unity Editor:
+Unity Cloud Relay:
+
+![image](https://github.com/user-attachments/assets/9a87edca-f9b1-401b-9519-21c897453e01)
+![image](https://github.com/user-attachments/assets/07724f41-de61-409a-9e2e-3df765d03d4f)
+![image](https://github.com/user-attachments/assets/156db46c-31aa-4183-ae77-f146b5011a0b)
+
+You can enable additional connection variants like direct Relay or Dedicated server connections in the Unity Editor:
 
 ![image](https://github.com/user-attachments/assets/ef6bf5c7-043e-46ed-8c67-d469632606a1)
-
-Multiplay Hosting:
-
-![image](https://github.com/user-attachments/assets/09a3d4ee-194d-4085-b790-50dc956c0ce5)
-
-Linux build + configs:
-
-![image](https://github.com/user-attachments/assets/f983a0bc-c61b-44c4-9ca2-1fe8f37b999f)
-![image](https://github.com/user-attachments/assets/e5a59335-d1ca-4e79-a377-5a5a3a4d2b42)
-
-Multiplay Hosting server:
-![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
-![image](https://github.com/user-attachments/assets/f0a11d94-7036-4cb1-bc94-992aefbe8d92)
-![image](https://github.com/user-attachments/assets/d2d433ab-a75e-46f8-a36f-3e68468143c5)
-![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
 
 Lobby dashboard:
 
@@ -71,9 +61,6 @@ Matchmaker dashboard:
 
 ![image](https://github.com/user-attachments/assets/2a57cd93-70de-4df9-b6cd-233b6888e0e6)
 
-Relay dashboard:
-
-![image](https://github.com/user-attachments/assets/156db46c-31aa-4183-ae77-f146b5011a0b)
 
 --
 
