@@ -124,7 +124,11 @@ All network scripts are separated from UI logic. The lobby code with Relay or De
 
 Dedicated Server (Multiplay Hosting):
 
-private async void Start()
+![image](https://github.com/user-attachments/assets/09a3d4ee-194d-4085-b790-50dc956c0ce5)
+![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
+![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
+
+        private async void Start()
         {
             #if SERVER
             
@@ -162,11 +166,6 @@ private async void Start()
             
             #endif
         }
-        
-![image](https://github.com/user-attachments/assets/09a3d4ee-194d-4085-b790-50dc956c0ce5)
-![image](https://github.com/user-attachments/assets/07edde31-860e-441e-9aaa-09fa81161dba)
-![image](https://github.com/user-attachments/assets/7d9a11ce-e6c7-4637-b93e-569c771419db)
-![image](https://github.com/user-attachments/assets/092fbd4a-b57a-42df-8e1f-4a7e8902af54)
 
 
 Unity Cloud Relay:
