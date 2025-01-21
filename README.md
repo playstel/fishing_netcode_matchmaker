@@ -1,7 +1,6 @@
 # Gun Fishing
 
 This small project describes working with a Unity Netcode.
-WebGl temporary server link: https://builds.lazy.soccer:2053/netcode_test/
 
 Game process:
 
